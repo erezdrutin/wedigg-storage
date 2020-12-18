@@ -29,7 +29,7 @@ export default function SiteTable(props){
      */
     useEffect(() => {
         if (verifyOperationBool === true){
-            deleteSite()
+            deleteSite();
             setVerifyOperationBool(false);
         }
     }, [verifyOperationBool]);

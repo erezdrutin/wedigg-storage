@@ -90,7 +90,7 @@ export default function NewSite(props) {
 
   // Variables Definition:
   const [name, setName] = useState(''); // TextField
-  const [storageTypesArr, setStorageTypesArr] = useState([]); // Empty Select with (+) button.
+  const [storageTypesArr, setStorageTypesArr] = useState(['Home Storage', 'Lab', 'Other']); // A Select filled with some default values with (+) button to add more storages.
   const [serviceTypesArr, setServiceTypesArr] = useState([]); // Empty Select with (+) button.
   const [suppliersArr, setSuppliersArr] = useState([]); // Empty Select with (+) button.
   const [categoriesArr, setCategoriesArr] = useState([]); // Empty Select with (+) button.

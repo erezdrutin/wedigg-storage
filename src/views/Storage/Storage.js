@@ -103,9 +103,9 @@ export default function Storage() {
   const classes = useStyles();
   const otherClasses = otherUseStyles();
   const [usersArr, setUsersArr] = useState([]);
-  const [currentUserRec, setCurrentUserRec] = useState({});
+  const [actionUserRec, setActionUserRec] = useState({});
 
-
+  const [filterUserRec, setFilterUserRec] = useState('');
   const [site, setSite] = useState('');
   const [sitesArr, setSitesArr] = useState([]);
   const [storage, setStorage] = useState('');
@@ -211,7 +211,7 @@ export default function Storage() {
    */
   const handleSetUsersData = (arr, currentRec) => {
     setUsersArr(arr)
-    setCurrentUserRec(currentRec)
+    setActionUserRec(currentRec)
   }
 
   /**
@@ -281,7 +281,12 @@ export default function Storage() {
 
     var query = devicesRef;
     
-    // If site exists OR site === 0
+    // If user exists:
+    if (!!filterUserRec){
+      console.log("CURUSER", filterUserRec);
+      query = query.where("user", "==", filterUserRec.uid);
+    }
+    // If site exists:
     if (site){
       var curSite = selectDataArr ? selectDataArr[site-1].siteName : "";
       var curStorage = selectDataArr ? selectDataArr[site-1].storageTypesArr[storage-1] : "";
@@ -469,6 +474,25 @@ export default function Storage() {
             </div>
           </CardHeader>
           <CardBody>
+
+          <FormControl variant="outlined" className={otherClasses.upperSelectFormControl}>
+            <InputLabel id="select-owner-outlined-label">Owners</InputLabel>
+            <Select
+                labelId="select-owner-outlined-label"
+                id="select-owner-outlined"
+                value={filterUserRec}
+                onChange={event => setFilterUserRec(event.target.value)}
+                label="Owners"
+            >
+              <MenuItem value="">
+                <em>Any</em>
+              </MenuItem>
+              {usersArr && usersArr.map((option, index) => (
+                  <MenuItem key={"usersArr_", index} value={option}>{option.fullName + ' | ' + option.email}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <FormControl variant="outlined" className={otherClasses.leftUpperSelectFormControl}>
             <InputLabel id="select-site-outlined-label">Site</InputLabel>
             <Select
@@ -585,7 +609,7 @@ export default function Storage() {
 
       { /* Allows us to give the user an option to add a new device */}
       <NewDevice open={open} setOpen={setOpen} storageDevices={storageDevices} setStorageDevices={setStorageDevices} 
-      handleOpenAlert={handleOpenAlert} userRec={currentUserRec} setCurrentDevice={setCurrentDevice} usersArr={usersArr}
+      handleOpenAlert={handleOpenAlert} userRec={actionUserRec} setCurrentDevice={setCurrentDevice} usersArr={usersArr}
       setSitesArr={setSitesArr} sitesArr={sitesArr} selectDataArr={selectDataArr} setSelectDataArr={setSelectDataArr}
       calculateWarrantyEnd={calculateWarrantyEnd} setOpenDeviceQr={setOpenDeviceQr}/>
 
@@ -593,7 +617,7 @@ export default function Storage() {
       {
         openEditDevice && (
           <EditDevice open={openEditDevice} setOpen={setOpenEditDevice} storageDevices={storageDevices} setStorageDevices={setStorageDevices} 
-          handleOpenAlert={handleOpenAlert} userRec={currentUserRec} currentDevice={currentDevice} setCurrentDevice={setCurrentDevice} usersArr={usersArr}
+          handleOpenAlert={handleOpenAlert} userRec={actionUserRec} currentDevice={currentDevice} setCurrentDevice={setCurrentDevice} usersArr={usersArr}
           setSitesArr={setSitesArr} sitesArr={sitesArr} selectDataArr={selectDataArr} setSelectDataArr={setSelectDataArr}
           calculateWarrantyEnd={calculateWarrantyEnd} setOpenDeviceQr={setOpenDeviceQr} deviceSuppliersDict={suppliersDict}/>
         )
