@@ -62,7 +62,7 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   {
-    path: "/TrackChanges",
+    path: "/track",
     name: "Track Changes",
     rtlName: "מעקב שינויים",
     icon: "assignment",

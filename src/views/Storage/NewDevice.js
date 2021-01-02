@@ -128,7 +128,7 @@ export default function NewDevice(props) {
     const [certificate, setCertificate] = useState(''); // Text Input
     const [certificateImage, setCertificateImage] = useState(''); // Image Input
     const [warrantyStartDate, setWarrantyStartDate] = useState(new Date()); // Date Picker
-    const [warrantyPeriod, setWarrantyPeriod] = useState(''); // Number Input
+    const [warrantyPeriod, setWarrantyPeriod] = useState('0'); // Number Input
     const [events, setEvents] = useState(''); // Text Input { Expandable }
     const [notes, setNotes] = useState(''); // Text Input { Expandable }
     const [actions, setActions] = useState([]); // An array containing the actions for the current device
@@ -358,9 +358,14 @@ export default function NewDevice(props) {
             site: sitesArr[parseInt(deviceSite)-1],
             storageType: storageType,
             warrantyStart: warrantyStartDate,
-            warrantyPeriod: parseInt(warrantyPeriod),
+            warrantyPeriod: warrantyPeriod.length > 0 ? parseInt(warrantyPeriod) : 0,
             notes: notes
         }
+
+        // Adding the warrantyEnd field & setting the current device value accordingly:
+        deviceRec.warrantyEnd = calculateWarrantyEnd(deviceRec.warrantyStart, deviceRec.warrantyPeriod);
+        setCurrentDevice(deviceRec);
+        console.log("DEVREC ========> ", deviceRec);
 
         // Setting the different values in the db document:
         newDocRef.set(deviceRec)
@@ -377,11 +382,6 @@ export default function NewDevice(props) {
             handleOpenAlert('error', 'An error occurred.');
             return false;
         });
-
-        // Adding the warrantyEnd field & setting the current device value accordingly:
-        deviceRec.warrantyEnd = calculateWarrantyEnd(deviceRec.warrantyStart, deviceRec.warrantyPeriod);
-        setCurrentDevice(deviceRec);
-        console.log("DEVREC ========> ", deviceRec);
 
         // Then adding the device record to the table:
         var tempArr = storageDevices;

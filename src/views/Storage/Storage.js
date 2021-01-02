@@ -21,6 +21,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
+import Checkbox from '@material-ui/core/Checkbox';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 import NewDevice from './NewDevice';
 import DeviceQrDialog from './DeviceQrDialog';
@@ -76,8 +81,12 @@ const otherUseStyles = makeStyles((theme) => ({
     leftUpperSelectFormControl: {
         margin: theme.spacing(1),
         marginLeft: theme.spacing(0),
-        minWidth: '10rem',
+        width: '17rem',
         marginBottom: theme.spacing(3),
+    },
+    upperSelectFormControlAutoComplete: {
+      margin: theme.spacing(1),
+      width: '17rem',
     },
     upperSelectFormControl: {
       margin: theme.spacing(1),
@@ -280,17 +289,23 @@ export default function Storage() {
     var devicesRef = fire.firestore().collection("devices");
 
     var query = devicesRef;
-    
+    var flag = false; // A flag to determine whether we should perform our "own" filter after retrieving the results from the db.
+
     // If user exists:
-    if (!!filterUserRec){
+    if (filterUserRec.length){
       console.log("CURUSER", filterUserRec);
-      query = query.where("user", "==", filterUserRec.uid);
+      query = query.where("user", "in", filterUserRec.map(rec => rec.uid));
     }
     // If site exists:
-    if (site){
-      var curSite = selectDataArr ? selectDataArr[site-1].siteName : "";
-      var curStorage = selectDataArr ? selectDataArr[site-1].storageTypesArr[storage-1] : "";
-      var curCategory = selectDataArr ? selectDataArr[site-1].categoriesArr[category-1] : "";
+    if (site.length === 1){
+      console.log("SISISIISISIS", site)
+      // If we only have 1 site chosen then we should load all the relevant data from the other relevant options:
+      var tempSite = sitesArr.indexOf(site[0]) + 1 // The actual value of the first site in the array.
+      console.log("SITESARR", sitesArr)
+      console.log("tempSite", tempSite)
+      var curSite = selectDataArr ? selectDataArr[tempSite-1].siteName : "";
+      var curStorage = selectDataArr ? selectDataArr[tempSite-1].storageTypesArr[storage-1] : "";
+      var curCategory = selectDataArr ? selectDataArr[tempSite-1].categoriesArr[category-1] : "";
       var curSupplier = suppliersArr ? suppliersArr[supplier-1] : "";
 
       if (curSite && curSite !== ""){
@@ -309,33 +324,45 @@ export default function Storage() {
         console.log("CURSUPPLIER", curSupplier)
         query = query.where("supplier", "==", curSupplier);
       }
+    } else if (site.length > 1){
+      if (filterUserRec.length){
+        flag = true
+      } else {
+        // We may have multiple sites, therefore rather than checking equality ("=") to a string, we will be checking with "in" an array:
+        console.log("TEMPARR", site)
+        query = query.where("site", "in", site);
+      }
     }
 
     console.log("ABOUT TO PERFORM QUERY ====> ", query)
 
+    // We still need to filter users based on matching devices results:
     query.get().then(function(querySnapshot) {
       var tempArr = []
       querySnapshot.forEach(function(doc){
         // Storing each of the devices stored in the db with it's matching details.
         var data = doc.data()
-        var deviceRec = {
-          category: data.category,
-          deviceName: data.deviceName,
-          certificate: data.certificate,
-          certificateImg: data.certificateImg,
-          price: data.price,
-          notes: data.notes,
-          serial: data.serial,
-          site: data.site,
-          storageType: data.storageType,
-          supplier: data.supplier,
-          user: data.user,
-          warrantyPeriod: data.warrantyPeriod,
-          warrantyStart: data.warrantyStart.toDate() // Converting the timestamp to a date and then to a string
-        };
-        deviceRec.warrantyEnd = calculateWarrantyEnd(deviceRec.warrantyStart, deviceRec.warrantyPeriod);
-        console.log("DEVICEREC", deviceRec)
-        tempArr.push(deviceRec);
+        // Only adding devices if flag = false or flag = true & the "chosen" sites contains the current site:
+        if (!flag || site.includes(data.site)){
+          var deviceRec = {
+            category: data.category,
+            deviceName: data.deviceName,
+            certificate: data.certificate,
+            certificateImg: data.certificateImg,
+            price: data.price,
+            notes: data.notes,
+            serial: data.serial,
+            site: data.site,
+            storageType: data.storageType,
+            supplier: data.supplier,
+            user: data.user,
+            warrantyPeriod: data.warrantyPeriod,
+            warrantyStart: data.warrantyStart.toDate() // Converting the timestamp to a date and then to a string
+          };
+          deviceRec.warrantyEnd = calculateWarrantyEnd(deviceRec.warrantyStart, deviceRec.warrantyPeriod);
+          console.log("DEVICEREC", deviceRec)
+          tempArr.push(deviceRec);
+        }
       })
       // Setting the devices data based on the db query:
       handleSetStorageDevices(tempArr);
@@ -474,15 +501,46 @@ export default function Storage() {
             </div>
           </CardHeader>
           <CardBody>
-
-          <FormControl variant="outlined" className={otherClasses.upperSelectFormControl}>
-            <InputLabel id="select-owner-outlined-label">Owners</InputLabel>
+            
+          { /* Basically what we're achieving here is an array of options chosen by the user.
+               Once the user will hit the filter button, we will then parse through the array and return any results which are relevant. */ }
+          <FormControl variant="outlined" className={otherClasses.leftUpperSelectFormControl}>
+          <Autocomplete
+            multiple
+            limitTags={1}
+            id="checkboxes-owners"
+            options={usersArr}
+            onChange={(event, newVal) => {
+              setFilterUserRec(newVal)
+            }}
+            disableCloseOnSelect
+            freeSolo
+            getOptionLabel={(option) => option.fullName}
+            renderOption={(option, { selected }) => (
+              <React.Fragment>
+                <Checkbox
+                  icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                  checkedIcon={<CheckBoxIcon fontSize="small" />}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option.fullName + ' | ' + option.email}
+              </React.Fragment>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" label="Owner" placeholder="" />
+            )}
+          />
+          </FormControl>
+{/* 
+          <FormControl variant="outlined" className={otherClasses.leftUpperSelectFormControl}>
+            <InputLabel id="select-owner-outlined-label">Owner</InputLabel>
             <Select
                 labelId="select-owner-outlined-label"
                 id="select-owner-outlined"
                 value={filterUserRec}
                 onChange={event => setFilterUserRec(event.target.value)}
-                label="Owners"
+                label="Owner"
             >
               <MenuItem value="">
                 <em>Any</em>
@@ -491,9 +549,56 @@ export default function Storage() {
                   <MenuItem key={"usersArr_", index} value={option}>{option.fullName + ' | ' + option.email}</MenuItem>
               ))}
             </Select>
-          </FormControl>
+          </FormControl> */}
 
-          <FormControl variant="outlined" className={otherClasses.leftUpperSelectFormControl}>
+          { /* Basically what we're achieving here is an array of options chosen by the user.
+               Once the user will hit the filter button, we will then parse through the array and return any results which are relevant. */ }
+          <FormControl variant="outlined" className={otherClasses.upperSelectFormControlAutoComplete}>
+          <Autocomplete
+            multiple
+            limitTags={1}
+            id="checkboxes-owners"
+            options={sitesArr}
+            onChange={(event, newVal) => {
+              setSite(newVal)
+              if (newVal && newVal.length === 1){
+                var curSite = sitesArr.indexOf(newVal[0]);
+                console.log("SJDJSDNZNCNXNC11111 ==>", selectDataArr[curSite])
+                console.log("SAKDKSANZNCNXZMC ==>", curSite);
+                setStoragesArr(selectDataArr[curSite].storageTypesArr);
+                setCategoriesArr(selectDataArr[curSite].categoriesArr);
+                setSuppliersArr(suppliersDict[newVal[0]]);
+              } else {
+                // If curSite === 0 --> Then we would like to rest the storagesArr & categoriesArr options:
+                setStoragesArr([]);
+                setCategoriesArr([]);
+                setSuppliersArr([]);
+                setStorage('');
+                setCategory('');
+                setSupplier('');
+              }
+            }}
+            disableCloseOnSelect
+            freeSolo
+            getOptionLabel={(option) => option}
+            renderOption={(option, { selected }) => (
+              <React.Fragment>
+                <Checkbox
+                  icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                  checkedIcon={<CheckBoxIcon fontSize="small" />}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option}
+              </React.Fragment>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" label="Site" placeholder="" />
+            )}
+          />
+          </FormControl>
+{/* 
+          <FormControl variant="outlined" className={otherClasses.upperSelectFormControl}>
             <InputLabel id="select-site-outlined-label">Site</InputLabel>
             <Select
                 labelId="select-site-outlined-label"
@@ -513,6 +618,7 @@ export default function Storage() {
                     // If curSite === 0 --> Then we would like to rest the storagesArr & categoriesArr options:
                     setStoragesArr([]);
                     setCategoriesArr([]);
+                    setSuppliersArr([]);
                     setStorage('');
                     setCategory('');
                     setSupplier('');
@@ -527,7 +633,7 @@ export default function Storage() {
                     <MenuItem key={"sitesArr_", index} value={index+1}>{option}</MenuItem>
                 ))}
             </Select>
-            </FormControl>
+            </FormControl> */}
 
             <FormControl variant="outlined" className={otherClasses.upperSelectFormControl}>
             <InputLabel id="select-storage-type-outlined-label">Storage</InputLabel>

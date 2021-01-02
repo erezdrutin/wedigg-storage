@@ -21,13 +21,17 @@ import EditSupplier from './EditSupplier';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import Checkbox from '@material-ui/core/Checkbox';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
 
 
 // Alerts:
@@ -246,12 +250,38 @@ export default function Supplier() {
    * A function in charge of filtering the sites data based on the user's site selection.
    */
   const handleFilterSitesData = () => {
-    if (site) {
-      var tempArr = suppliersData.filter(data => data.site === sitesData[site-1].site);
-      setSuppliersArr(tempArr);
-    } else {
-      setSuppliersArr(suppliersData);
+    const db = fire.firestore();
+    var query = db.collection("suppliers");
+    var tempArr = [];
+
+    var tempSitesArr = site.map(a => a.site);
+
+    if (tempSitesArr.length){
+      query = query.where("site", "in", tempSitesArr);
     }
+
+    // Performing a query to the db to retrieve all the relevant suppliers:
+    query.get().then(function(querySnapshot){
+      querySnapshot.forEach(function(doc){
+        var data = doc.data();
+        setSuppliersArr(suppliersData);
+        // Creating a supplier record for the current supplier:
+        var supplierRec = {
+          supplierName: data.supplierName,
+          address: data.address,
+          serviceType: data.serviceType,
+          contact: data.contact,
+          site: data.site,
+          sla: data.sla,
+          tin: data.tin,
+          notes: data.notes
+        }
+        // Adding the new record to the array of suppliers:
+        tempArr.push(supplierRec);
+      })
+      // Setting the suppliers data according to the new array that we created:
+      handleSetSuppliersData(tempArr)
+    })
   }
 
 
@@ -284,7 +314,7 @@ export default function Supplier() {
         tempArr.push(supplierRec);
       })
       // Setting the suppliers data according to the new array that we created:
-      handleSetSuppliersData(tempArr)
+      handleSetSuppliersData(tempArr);
     })
   }
 
@@ -316,7 +346,8 @@ export default function Supplier() {
             </Button>
           </CardHeader>
           <CardBody>
-            <FormControl variant="outlined" className={otherClasses.leftUpperSelectFormControl}>
+            
+            {/* <FormControl variant="outlined" className={otherClasses.leftUpperSelectFormControl}>
               <InputLabel id="select-storage-type-outlined-label">Site</InputLabel>
               <Select
                   labelId="select-storage-type-outlined-label"
@@ -332,7 +363,38 @@ export default function Supplier() {
                     <MenuItem key={"sitesData", index+1} value={index+1}>{option.site}</MenuItem>
                   ))}
               </Select>
+            </FormControl> */}
+
+
+            <FormControl variant="outlined" className={otherClasses.leftUpperSelectFormControl}>
+              <Autocomplete
+                multiple
+                limitTags={1}
+                id="checkboxes-sites"
+                options={sitesData}
+                onChange={(event, newVal) => {
+                  setSite(newVal)
+                }}
+                disableCloseOnSelect
+                freeSolo
+                getOptionLabel={(option) => option.site}
+                renderOption={(option, { selected }) => (
+                  <React.Fragment>
+                    <Checkbox
+                      icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                      checkedIcon={<CheckBoxIcon fontSize="small" />}
+                      style={{ marginRight: 8 }}
+                      checked={selected}
+                    />
+                    {option.site}
+                  </React.Fragment>
+                )}
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" label="Site" placeholder="" />
+                )}
+              />
             </FormControl>
+
             <Button className={otherClasses.filterButton} onClick={handleFilterSitesData}>Filter</Button>
 
             <SupplierTable 
