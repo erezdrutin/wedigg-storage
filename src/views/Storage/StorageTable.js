@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 
 export default function StorageTable(props){
     const { title, headerBackground, data, setData, fullData, setOpenDeviceQr, currentDevice, setCurrentDevice, usersData, handleOpenAlert, setOpenEditDevice,
-        handleOpenVerifyOperation, verifyOperationBool, setVerifyOperationBool } = props;
+        handleOpenVerifyOperation, verifyOperationBool, setVerifyOperationBool, setDeviceCount } = props;
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
     const editDevice = (deviceDetails) => {
@@ -17,6 +17,13 @@ export default function StorageTable(props){
         console.log("Editing device: ", deviceDetails)
     }
 
+    /**
+     * A function in charge of updating our devices counter.
+     * @param {int} count - A count representing the amount of devices in our DB.
+     */
+    const handleSetDeviceCount = (count) => {
+        setDeviceCount(count);
+    }
 
 
     // ------------------------------------------------------- Deleting a device -------------------------------------------------------
@@ -55,6 +62,7 @@ export default function StorageTable(props){
         // Variables Definition:
         const db = fire.firestore();
         var docRef = db.collection("devices").where("serial", "==", currentDevice.serial);
+        var newDevCount = data.length - 1;
 
         // Deleting from the db & table:
         docRef.get().then(function(querySnapshot){
@@ -62,6 +70,8 @@ export default function StorageTable(props){
             querySnapshot.docs[0].ref.delete();
             // Deleting the device from the table:
             removeDeviceFromTable(currentDevice);
+            // Removing the device from our devices counter:
+            handleSetDeviceCount(newDevCount);
             // Letting the user know that the operation was successful:
             handleOpenAlert("success", "Successfully deleted the device.");
         })
@@ -95,7 +105,7 @@ export default function StorageTable(props){
             title={title}
             columns={[
     
-            { title: 'Actions', field: 'notes', render: rowData => (
+            { title: 'Actions', field: 'notes', export: false, render: rowData => (
                 <Grid>
                     <IconButton color="inherit" aria-label="edit device" style={{maxWidth: '32px', maxHeight: '32px'}} onClick={() => editDevice(rowData)}>
                         <EditIcon />

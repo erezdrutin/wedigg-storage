@@ -66,7 +66,21 @@ const styles = {
       fontWeight: "400",
       lineHeight: "1"
     }
-  }
+  },
+  headerColor: {
+    background: 'linear-gradient(45deg, #2ECC71 30%, #20E573 90%)',
+    boxShadow: '0 3px 5px 2px rgba(32, 229, 115, .30)',
+    margin: "0 15px",
+    padding: "0",
+    position: "relative",
+    padding: "0.75rem 1.25rem",
+    marginBottom: "0",
+    borderBottom: "none",
+    borderRadius: "3px",
+    marginTop: "-20px",
+    padding: "15px",
+    height: "5.75rem"
+  },
 };
 
 const useStyles = makeStyles(styles);
@@ -80,6 +94,10 @@ export default function Site() {
   const [openEdit, setOpenEdit] = useState(false);
   const [existingSite, setExistingSite] = useState({}); // A variable which will help us determine the site chosen by the user.
   const [isEditing, setIsEditing] = useState(false);
+
+  // Sites Counter & Storages Counter:
+  const [siteCount, setSiteCount] = useState(0);
+  const [storageCount, setStorageCount] = useState(0);
 
   // Alert Variables:
   const [alertOpen, setAlertOpen] = useState(false);
@@ -137,6 +155,7 @@ export default function Site() {
     border: 0,
     color: 'white',
     height: 48,
+    fontSize: '14px',
     padding: '0 30px',
     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
   };
@@ -252,16 +271,54 @@ export default function Site() {
       })
   }
 
+  /**
+   * A function in charge of calculating the sum of storages.
+   */
+  const getStoragesCount = () => {
+    var storagesTotal = sitesData.reduce(function(prev, cur){
+        return prev + cur.storageTypesArrCount;
+    }, 0);
+    return storagesTotal;
+  }
+
   // A function which will run as soon as the page loads:
   useEffect(() => {
     getDataFromDb();
   }, []);
 
+  /**
+   * Attaching a listener to the siteCount and updating it's value in the db accordingly when it's value changes.
+   */
+  useEffect(() => {
+    if (siteCount !== 0){
+      // Updating our db counter:
+      const db = fire.firestore();
+      var docRef = db.collection("counters").doc("sites");
+      docRef.update({
+        count: siteCount
+      });
+    }
+  }, [siteCount])
+
+  /**
+   * Attaching a listener to the storageCount and updating it's value in the db accordingly when it's value changes.
+   */
+  useEffect(() => {
+    if (storageCount !== 0){
+      // Updating our db counter:
+      const db = fire.firestore();
+      var docRef = db.collection("counters").doc("storages");
+      docRef.update({
+        count: storageCount
+      });
+    }
+  }, [storageCount])
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="primary">
+          <CardHeader className={classes.headerColor}>
             <h4 className={classes.cardTitleWhite}>Sites Table</h4>
             <p className={classes.cardCategoryWhite}>
               A table containing all the managed sites.
@@ -290,12 +347,16 @@ export default function Site() {
             handleOpenVerifyOperation={handleOpenVerifyOperation}
             verifyOperationBool={verifyOperationBool}
             setVerifyOperationBool={setVerifyOperationBool}
+            setSiteCount={setSiteCount}
+            setStorageCount={setStorageCount}
+            getStoragesCount={getStoragesCount}
             />
           </CardBody>
         </Card>
       </GridItem>
 
-    <NewSite open={open} setOpen={setOpen} handleOpenAlert={handleOpenAlert} sitesNamesArr={sitesArr} setSitesTableData={handleSetSitesData} sitesTableData={sitesData} />
+    <NewSite open={open} setOpen={setOpen} handleOpenAlert={handleOpenAlert} sitesNamesArr={sitesArr} setSitesTableData={handleSetSitesData} sitesTableData={sitesData}
+    setSiteCount={setSiteCount} setStorageCount={setStorageCount} getStoragesCount={getStoragesCount}/>
     
     {
       openEdit && (

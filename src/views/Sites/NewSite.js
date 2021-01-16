@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function NewSite(props) {
   const classes = useStyles();
-  const { open, setOpen, handleOpenAlert, sitesNamesArr, setSitesTableData, sitesTableData } = props;
+  const { open, setOpen, handleOpenAlert, sitesNamesArr, setSitesTableData, sitesTableData, setSiteCount, setStorageCount, getStoragesCount } = props;
   const [sitesData, setSitesData] = useState([]); // Passing this variable to NewSupplier.
 
   // Variables Definition:
@@ -127,7 +127,7 @@ export default function NewSite(props) {
    */
   const cleanInput = () => {
       setName('');
-      setStorageTypesArr([]);
+      setStorageTypesArr(['Home Storage', 'Lab', 'Other']);
       setServiceTypesArr([]);
       setSuppliersArr([]);
       setCategoriesArr([]);
@@ -164,6 +164,44 @@ export default function NewSite(props) {
     setSitesTableData(tempArr);
   }
 
+  /**
+   * A function in charge of updating our sites counter.
+   * @param {int} count - A count representing the amount of sites in our DB.
+   */
+  const handleSetSiteCount = (count) => {
+    setSiteCount(count);
+  }
+
+  /**
+   * A function in charge of updating our storages counter.
+   * @param {int} count - A count representing the amount of storages in our DB.
+   */
+  const handleSetStorageCount = (count) => {
+    setStorageCount(count);
+  }
+
+  /**
+   * A function in charge of updating our suppliers counter.
+   * First, checking how many suppliers we should add (if it's 0 then this function will just return).
+   * Then, if we should add any suppliers to the suppliers counter - retrieving the suppliers counter from the db.
+   * Once we have the suppliers counter, adding the X suppliers to the counter and over-writing the existing counter in the db.
+   */
+  const handleUpdateSuppliersCount = () => {
+    if (suppliersArr.length > 0){
+        const db = fire.firestore();
+        console.log("ayyo waddup?");
+        var docRef = db.collection("counters").doc("suppliers");
+        docRef.get().then(function(doc){
+            if (doc.exists){
+                // Storing the count of suppliers from the db and adding the current amount of suppliers to it:
+                var newSupCount = doc.data().count + suppliersArr.length;
+                docRef.update({
+                    count: newSupCount
+                });
+            }
+        })
+    }
+  }
 
   /**
    * A function in charge of adding the new site and the relevant details to the db.
@@ -177,6 +215,9 @@ export default function NewSite(props) {
       // Setting the paths in which we will write the new doc(s):
       const docRef = db.collection("sites").doc(name);
       const supDocRef = db.collection("suppliers");
+      var newSiteCount = sitesTableData.length + 1;
+      var newStorageCount = getStoragesCount() + storageTypesArr.length;
+
     
       var siteRec = {
         serviceTypesArr: serviceTypesArr,
@@ -200,7 +241,6 @@ export default function NewSite(props) {
         suppliersArr.forEach(function(supplier){
             // Once we finished writing the site document - we would like to continue and write the supplier(s) document(s):
             var curDocRef = supDocRef;
-
             curDocRef.add(supplier)
             .then(function(docRef) {
                 console.log("Supplier written with ID: ", docRef.id);
@@ -209,10 +249,15 @@ export default function NewSite(props) {
                 console.error("Error adding document: ", error);
             });
         })
-        
+
+        // Adding the site to the sites counter's document:
+        handleSetSiteCount(newSiteCount);
+        // Adding the storages to the storages counter's document:
+        handleSetStorageCount(newStorageCount);
+        // Adding the supplier(s) to the suppliers counter's document:
+        handleUpdateSuppliersCount();
         // Adding the site to the sites table:
         handleAddSiteToTable(sitesTblRec);
-
         // Setting an alert to let the user know that the site was successfully added:
         handleOpenAlert("success", "The site was successfully added!");
       })

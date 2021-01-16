@@ -1,0 +1,27 @@
+const iconsArr = [
+    {"icon": "verified", "description": "Success"},
+    {"icon": "warning", "description": "Warning"},
+    {"icon": "schedule_icon", "description": "Clock"},
+    {"icon": "calendar_today", "description": "Calendar"},
+    {"icon": "build", "description": "Lab"},
+    {"icon": "grade", "description": "Important"},
+    {"icon": "tv", "description": "TV"},
+    {"icon": "phone_iphone", "description": "Phone"},
+    {"icon": "tablet_mac", "description": "Tablet"},
+    {"icon": "computer", "description": "Laptop"},
+    {"icon": "phonelink", "description": "Devices"},
+    {"icon": "location_on", "description": "Location"},
+    {"icon": "storage", "description": "Storage"},
+    {"icon": "cloud", "description": "Cloud"},
+    {"icon": "headset", "description": "Earphones"},
+    {"icon": "all_inbox", "description": "Drawer"},
+    {"icon": "account_box", "description": "Person"},
+    {"icon": "supervisor_account", "description": "People"},
+    {"icon": "explore", "description": "Explore"},
+    {"icon": "category", "description": "Category"},
+    {"icon": "local_shipping", "description": "Delivery"},
+    {"icon": "storefront", "description": "Supplier"},
+    {"icon": "delete", "description": "Trash"},
+]
+
+export default iconsArr;

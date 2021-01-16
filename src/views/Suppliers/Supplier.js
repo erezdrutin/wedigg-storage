@@ -83,7 +83,21 @@ const styles = {
       fontWeight: "400",
       lineHeight: "1"
     }
-  }
+  },
+  headerColor: {
+    background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+    boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .30)',
+    margin: "0 15px",
+    padding: "0",
+    position: "relative",
+    padding: "0.75rem 1.25rem",
+    marginBottom: "0",
+    borderBottom: "none",
+    borderRadius: "3px",
+    marginTop: "-20px",
+    padding: "15px",
+    height: "5.75rem"
+  },
 };
 
 const otherUseStyles = makeStyles((theme) => ({
@@ -124,6 +138,9 @@ export default function Supplier() {
   const [sitesData, setSitesData] = useState(['']);
   const [openEdit, setOpenEdit] = useState(false); // A variable to determine when we're editing a supplier.
   const [existingSupplier, setExistingSupplier] = useState({}); // A variable which will help us determine the supplier chosen by the user.
+
+  // Suppliers Counter:
+  const [supplierCount, setSupplierCount] = useState(0);
 
   // Alert Variables:
   const [alertOpen, setAlertOpen] = useState(false);
@@ -181,6 +198,7 @@ export default function Supplier() {
     border: 0,
     color: 'white',
     height: 48,
+    fontSize: '14px',
     padding: '0 30px',
     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
   };
@@ -235,13 +253,11 @@ export default function Supplier() {
    * @param {Object} rowData - a table record representing an existing supplier.
    */
   const handleSetEditSupplier = (rowData) => {
-    console.log(rowData);
     setExistingSupplier(rowData);
   }
 
   // A function that handles changing the storage devices values (since we can't do that from an asynchronous function):
   const handleSetSuppliersData = (arr) => {
-    //console.log("HI EREZ", arr);
     setSuppliersArr(arr);
     setSuppliersData(arr);
   }
@@ -324,11 +340,26 @@ export default function Supplier() {
     generateSitesDataFromDb();
   }, []);
 
+
+  /**
+   * Attaching a listener to the deviceCount and updating it's value in the db accordingly when it's value changes.
+   */
+  useEffect(() => {
+    if (supplierCount !== 0){
+      // Updating our db counter:
+      const db = fire.firestore();
+      var docRef = db.collection("counters").doc("suppliers");
+      docRef.update({
+        count: supplierCount
+      });
+    }
+  }, [supplierCount])
+
   return (
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="primary">
+          <CardHeader className={classes.headerColor}>
             <h4 className={classes.cardTitleWhite}>Suppliers Table</h4>
             <p className={classes.cardCategoryWhite}>
               A table containing all the suppliers.
@@ -408,13 +439,14 @@ export default function Supplier() {
             setVerifyOperationBool={setVerifyOperationBool}
             setOpenEditSupplier={setOpenEdit}
             handleSetEditSupplier={handleSetEditSupplier}
+            setSupplierCount={setSupplierCount}
             />
           </CardBody>
         </Card>
       </GridItem>
 
     <NewSupplier open={open} setOpen={setOpen} handleOpenAlert={handleOpenAlert} sitesData={sitesData} 
-    handleSetSuppliersTable={handleSetSuppliersData} suppliersTableData={suppliersData}/>
+    handleSetSuppliersTable={handleSetSuppliersData} suppliersTableData={suppliersData} setSupplierCount={setSupplierCount} />
 
     {
       openEdit && (

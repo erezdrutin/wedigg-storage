@@ -75,6 +75,20 @@ const styles = {
     float: 'right',
     marginTop: '-50px',
   },
+  headerColor: {
+    background: 'linear-gradient(45deg, #F39C12 30%, #F5B041 90%)',
+    boxShadow: '0 3px 5px 2px rgba(243, 156, 18, .30)',
+    margin: "0 15px",
+    padding: "0",
+    position: "relative",
+    padding: "0.75rem 1.25rem",
+    marginBottom: "0",
+    borderBottom: "none",
+    borderRadius: "3px",
+    marginTop: "-20px",
+    padding: "15px",
+    height: "5.75rem"
+  },
 };
 
 const otherUseStyles = makeStyles((theme) => ({
@@ -126,8 +140,10 @@ export default function Storage() {
   const [suppliersArr, setSuppliersArr] = useState([]);
   const [selectDataArr, setSelectDataArr] = useState([]);
 
-  const [storageDevices, setStorageDevices] = useState([]);
+  // Devices Counter:
+  const [deviceCount, setDeviceCount] = useState(0);
 
+  const [storageDevices, setStorageDevices] = useState([]);
   const [open, setOpen] = useState(false);
   const [chosenDevice, setChosenDevice] = useState('');
   const [editDevice, setEditDevice] = useState('');
@@ -195,6 +211,7 @@ export default function Storage() {
     borderRadius: 3,
     border: 0,
     color: 'white',
+    fontSize: '14px',
     height: 48,
     padding: '0 30px',
     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
@@ -281,7 +298,6 @@ export default function Storage() {
     setSelectDataArr(arr);
     // Setting the sites arr:
     setSitesArr(arr.map(a => a.siteName));
-    console.log(arr);
   }
 
 
@@ -293,35 +309,27 @@ export default function Storage() {
 
     // If user exists:
     if (filterUserRec.length){
-      console.log("CURUSER", filterUserRec);
       query = query.where("user", "in", filterUserRec.map(rec => rec.uid));
     }
     // If site exists:
     if (site.length === 1){
-      console.log("SISISIISISIS", site)
       // If we only have 1 site chosen then we should load all the relevant data from the other relevant options:
       var tempSite = sitesArr.indexOf(site[0]) + 1 // The actual value of the first site in the array.
-      console.log("SITESARR", sitesArr)
-      console.log("tempSite", tempSite)
       var curSite = selectDataArr ? selectDataArr[tempSite-1].siteName : "";
       var curStorage = selectDataArr ? selectDataArr[tempSite-1].storageTypesArr[storage-1] : "";
       var curCategory = selectDataArr ? selectDataArr[tempSite-1].categoriesArr[category-1] : "";
       var curSupplier = suppliersArr ? suppliersArr[supplier-1] : "";
 
       if (curSite && curSite !== ""){
-        console.log("CURSITE", curSite)
         query = query.where("site", "==", curSite);
       }
       if (curStorage && curStorage !== ""){
-        console.log("CURSTORAGE", curStorage)
         query = query.where("storageType", "==", curStorage);
       }
       if (curCategory && curCategory !== ""){
-        console.log("CURCATEGORY", curCategory)
         query = query.where("category", "==", curCategory);
       }
       if (curSupplier && curSupplier !== ""){
-        console.log("CURSUPPLIER", curSupplier)
         query = query.where("supplier", "==", curSupplier);
       }
     } else if (site.length > 1){
@@ -329,12 +337,9 @@ export default function Storage() {
         flag = true
       } else {
         // We may have multiple sites, therefore rather than checking equality ("=") to a string, we will be checking with "in" an array:
-        console.log("TEMPARR", site)
         query = query.where("site", "in", site);
       }
     }
-
-    console.log("ABOUT TO PERFORM QUERY ====> ", query)
 
     // We still need to filter users based on matching devices results:
     query.get().then(function(querySnapshot) {
@@ -360,7 +365,6 @@ export default function Storage() {
             warrantyStart: data.warrantyStart.toDate() // Converting the timestamp to a date and then to a string
           };
           deviceRec.warrantyEnd = calculateWarrantyEnd(deviceRec.warrantyStart, deviceRec.warrantyPeriod);
-          console.log("DEVICEREC", deviceRec)
           tempArr.push(deviceRec);
         }
       })
@@ -395,7 +399,6 @@ export default function Storage() {
           warrantyStart: data.warrantyStart.toDate() // Converting the timestamp to a date and then to a string
         };
         deviceRec.warrantyEnd = calculateWarrantyEnd(deviceRec.warrantyStart, deviceRec.warrantyPeriod);
-        console.log("DEVICEREC", deviceRec)
         tempArr.push(deviceRec);
       })
       // Setting the devices data based on the db query:
@@ -470,6 +473,20 @@ export default function Storage() {
     setSuppliersDict(dict);
   }
 
+  /**
+   * Attaching a listener to the deviceCount and updating it's value in the db accordingly when it's value changes.
+   */
+  useEffect(() => {
+    if (deviceCount !== 0){
+      // Updating our db counter:
+      const db = fire.firestore();
+      var docRef = db.collection("counters").doc("devices");
+      docRef.update({
+        count: deviceCount
+      });
+    }
+  }, [deviceCount])
+
   useEffect(() => {
     // First retrieving all the users details from the db:
     const db = fire.firestore()
@@ -484,7 +501,7 @@ export default function Storage() {
     <GridContainer>
       <GridItem xs={12} sm={12} md={12}>
         <Card>
-          <CardHeader color="primary">
+          <CardHeader className={classes.headerColor}>
             <h4 className={classes.cardTitleWhite}>Your Storage</h4>
             <p className={classes.cardCategoryWhite}>
               All your managed storage in one space.
@@ -563,8 +580,6 @@ export default function Storage() {
               setSite(newVal)
               if (newVal && newVal.length === 1){
                 var curSite = sitesArr.indexOf(newVal[0]);
-                console.log("SJDJSDNZNCNXNC11111 ==>", selectDataArr[curSite])
-                console.log("SAKDKSANZNCNXZMC ==>", curSite);
                 setStoragesArr(selectDataArr[curSite].storageTypesArr);
                 setCategoriesArr(selectDataArr[curSite].categoriesArr);
                 setSuppliersArr(suppliersDict[newVal[0]]);
@@ -706,6 +721,7 @@ export default function Storage() {
             handleOpenVerifyOperation={handleOpenVerifyOperation}
             verifyOperationBool={verifyOperationBool}
             setVerifyOperationBool={setVerifyOperationBool}
+            setDeviceCount={setDeviceCount}
             //getFormattedDate={getFormattedDate}
             />
           </CardBody>
@@ -717,7 +733,7 @@ export default function Storage() {
       <NewDevice open={open} setOpen={setOpen} storageDevices={storageDevices} setStorageDevices={setStorageDevices} 
       handleOpenAlert={handleOpenAlert} userRec={actionUserRec} setCurrentDevice={setCurrentDevice} usersArr={usersArr}
       setSitesArr={setSitesArr} sitesArr={sitesArr} selectDataArr={selectDataArr} setSelectDataArr={setSelectDataArr}
-      calculateWarrantyEnd={calculateWarrantyEnd} setOpenDeviceQr={setOpenDeviceQr}/>
+      calculateWarrantyEnd={calculateWarrantyEnd} setOpenDeviceQr={setOpenDeviceQr} setDeviceCount={setDeviceCount}/>
 
       { /* Allows us to give the user an option to edit a device */}
       {

@@ -3,8 +3,10 @@ import DashboardCard from "./DashboardCard.js";
 import Grid from '@material-ui/core/Grid';
 
 export default function GenerateCustomCards(props) {
-    const { db, cardsArr } = props;
+    const { db, cardsArr, setCardsArr, handleOpenAlert } = props;
     const [dataArr, setDataArr] = useState([]);
+
+
 
     /**
      * A function in charge of retrieving the count of the devices that match the filters applied by the user.
@@ -17,7 +19,7 @@ export default function GenerateCustomCards(props) {
       // Starting to apply the different filters:
       // 1. Checking if the card is attached to a certain owner.
       if (cardRec.owner.length > 0){
-        query = query.where("owner", "in", cardRec.owner)
+        query = query.where("user", "in", cardRec.owner)
       }
       // 2. If the card isn't associated with an owner, checking if it's associated with a site:
       else if (cardRec.site.length > 0){
@@ -63,10 +65,9 @@ export default function GenerateCustomCards(props) {
       if (tempEnd !== 0){
         query = query.where("warrantyEnd", "<=", tempEnd);
       }
-      
+
       // Performing the query and returning the size of the query results:
       query.get().then(function(snap){
-        console.log("SKSKSKSKS", snap.size)
         // Adding the retrieved count as a field to the card:
         cardRec.count = snap.size;
         // Updating the dataArr accordingly:
@@ -114,18 +115,27 @@ export default function GenerateCustomCards(props) {
       tempArr.push(rec);
       setDataArr(tempArr);
     }
-
-    const getCountTest = (cardRec) => {
-      console.log("ok?")
-      return Math.floor(Math.random() * 10) + 1;
-    }
   
     return (
       <React.Fragment>
         <Grid container item xs={12} spacing={4}>
           {
             dataArr.map((cardRec, index) => (
-              <DashboardCard key={"cardRec_", index} countTitle={cardRec.count} category="Devices" color={cardRec.color} icon={cardRec.icon} description={cardRec.description} isDefaultCard={false}></DashboardCard>
+              <DashboardCard
+              key={"cardRec_", index}
+              countTitle={cardRec.count}
+              category="Devices"
+              color={cardRec.color}
+              icon={cardRec.icon}
+              description={cardRec.description}
+              isDefaultCard={false}
+              handleOpenAlert={handleOpenAlert}
+              dataArr={dataArr}
+              setDataArr={setDataArr}
+              cardsArr={cardsArr}
+              setCardsArr={setCardsArr}
+              >
+              </DashboardCard>
             ))
           }
         </Grid>

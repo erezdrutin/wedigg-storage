@@ -15,37 +15,36 @@ export default function GenerateDefaultCards(props) {
     const [storagesCount, setStoragesCount] = useState(0);
     const [devicesCount, setDevicesCount] = useState(0);
     const [suppliersCount, setSuppliersCount] = useState(0);
-  
+    
+    // Defining an array of objects connecting between the set functions of each counter and it's reference in the db:
+    const docRefs = [
+      {setFunc : setSitesCount, ref: db.collection("counters").doc("sites")},
+      {setFunc : setStoragesCount, ref: db.collection("counters").doc("storages")},
+      {setFunc : setDevicesCount, ref: db.collection("counters").doc("devices")},
+      {setFunc : setSuppliersCount, ref: db.collection("counters").doc("suppliers")},
+    ]
+
     /**
-     * A function in charge of setting the different counters values based on the received counters values.
-     * @param {int} siCount - A number representing the count of sites.
-     * @param {int} stCount - A number representing the count of storages.
-     * @param {int} deCount - A number representing the count of devices.
-     * @param {int} suCount - A number representing the count of suppliers.
+     * A function in charge handling the setting of the different counters and their values.
+     * @param {*} field - A function that sets the matching counter's value.
+     * @param {*} counter - The counter to set it's value.
      */
-    const handleSetCounters = (siCount, stCount, deCount, suCount) => {
-      setSitesCount(siCount);
-      setStoragesCount(stCount);
-      setDevicesCount(deCount);
-      setSuppliersCount(suCount);
+    const handleSetCounter = (setFunc, counter) => {
+      setFunc(counter);
     }
   
     const getCounts = () => {
-      // Defining a reference to the db where we store the defaultCards values:
-      var docRef = db.collection("counters").doc('defaultCards');
-  
-      // Retrieving the defaultCards document from the db:
-      docRef.get().then(function(doc) {
-        if (doc.exists) {
-          var data = doc.data();
-          handleSetCounters(data.sites, data.storages, data.devices, data.suppliers);
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-      }).catch(function(error) {
+      docRefs.forEach(function(docRef){
+        docRef.ref.get().then(function(doc){
+          if (doc.exists){
+            var data = doc.data();
+            handleSetCounter(docRef.setFunc, data.count);
+          }
+        })
+        .catch(function(error){
           console.log("Error getting document:", error);
-      });
+        });
+      })
     }
     
     useEffect(() => {

@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function NewDevice(props) {
     const { open, setOpen, storageDevices, setStorageDevices, handleOpenAlert, userRec, setCurrentDevice, usersArr,
-            setSitesArr, sitesArr, selectDataArr, setSelectDataArr, calculateWarrantyEnd, setOpenDeviceQr } = props;
+            setSitesArr, sitesArr, selectDataArr, setSelectDataArr, calculateWarrantyEnd, setOpenDeviceQr, setDeviceCount } = props;
     
     // The current component's style:
     const classes = useStyles();
@@ -284,6 +284,15 @@ export default function NewDevice(props) {
         setSerialDisable(false);
     }
 
+
+    /**
+     * A function in charge of updating our devices counter.
+     * @param {int} count - A count representing the amount of devices in our DB.
+     */
+    const handleSetDeviceCount = (count) => {
+        setDeviceCount(count);
+    }
+
     const handleAddDevice = () => {
         // 1. Add the device to the db.
         // 2. Add action to device's sub-collection "actions".
@@ -344,6 +353,7 @@ export default function NewDevice(props) {
         const auth = fire.auth();
         var docRef = db.collection("devices");
         var newDocRef = docRef.doc();
+        var newDevCount = storageDevices.length + 1;
 
         // Defining a device record:
         var deviceRec = {
@@ -370,9 +380,8 @@ export default function NewDevice(props) {
         // Setting the different values in the db document:
         newDocRef.set(deviceRec)
         .then(function() {
-            console.log("Document successfully written!");
-            handleOpenAlert('success', 'Successfully added the device!');
-
+            // Adding the device to the devices counter's document:
+            handleSetDeviceCount(newDevCount);
             // Once we finish adding the device, we would like to pass the current doc's id
             // to a function on which we will start a new "actions" collection for the current device:
             return addAction(db, newDocRef.id);
@@ -405,7 +414,7 @@ export default function NewDevice(props) {
         })
         .then(function() {
             console.log("Document successfully written!");
-            handleOpenAlert('success', 'Successfully added the action to the device actions sub-collection!');
+            handleOpenAlert('success', 'Successfully added the device!');
             // Once we're done --> opening the qr code of the added device:
             setOpenDeviceQr(true);
             return true;

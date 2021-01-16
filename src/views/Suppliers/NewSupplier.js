@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function NewSupplier(props) {
   const classes = useStyles();
-  const { open, setOpen, supplierSite, handleOpenAlert, sitesData, handleSetSuppliersTable, suppliersTableData } = props;
+  const { open, setOpen, supplierSite, handleOpenAlert, sitesData, handleSetSuppliersTable, suppliersTableData, setSupplierCount } = props;
 
   // Variables Definition:
   const [name, setName] = useState(''); // TextField
@@ -154,9 +154,16 @@ export default function NewSupplier(props) {
     var tempArr = suppliersTableData;
     tempArr.push(supplierRec);
     handleSetSuppliersTable(tempArr);
-    console.log("TEMPARR", tempArr);
   }
 
+
+    /**
+     * A function in charge of updating our devices counter.
+     * @param {int} count - A count representing the amount of devices in our DB.
+     */
+    const handleSetSuppliersCount = (count) => {
+        setSupplierCount(count);
+    }
 
   /**
    * A function in charge of adding the supplier based on the inputted details to the db.
@@ -164,9 +171,12 @@ export default function NewSupplier(props) {
   const handleAddSupplierToDb = (tempRec) => {
     const db = fire.firestore();
     var docRef = db.collection("suppliers");
+    var newSupCount = suppliersTableData.length + 1;
 
     docRef.add(tempRec)
-    .then(function(docRef) {
+    .then(function() {
+        // Adding the supplier to the supplier counter's document:
+        handleSetSuppliersCount(newSupCount);
         // Adding the rec to the suppliers table:
         handleAddSupplierToTable(tempRec);
         handleOpenAlert("success", "Successfully added the supplier!");
@@ -380,7 +390,6 @@ export default function NewSupplier(props) {
                     
                     onChange={event => {
                         var curSite = event.target.value;
-                        console.log(curSite);
                         // 1. Setting the site:
                         setSite(curSite);
                         // 2. Updating the storage types & categories arrays accordingly:

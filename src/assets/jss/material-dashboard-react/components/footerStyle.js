@@ -28,6 +28,14 @@ const footerStyle = {
     fontSize: "14px",
     float: "right!important"
   },
+  center: {
+    padding: "-20px 0px 0px 0px",
+    margin: "0",
+    fontSize: "14px",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   footer: {
     bottom: "0",
     borderTop: "1px solid " + grayColor[11],

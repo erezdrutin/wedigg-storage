@@ -4,14 +4,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { grayColor } from "assets/jss/material-dashboard-react.js";
-import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import VerifyOperation from "../VerifyOperation.js";
 
 import Icon from '@material-ui/core/Icon';
 
-import AppleIcon from '@material-ui/icons/Apple';
 import { faBox, faMobileAlt, faStore, faMapMarkedAlt } from '@fortawesome/free-solid-svg-icons';
-import Button from "components/CustomButtons/Button.js";
 // core components
 import Grid from '@material-ui/core/Grid';
 import Card from "components/Card/Card.js";
@@ -142,21 +140,98 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DashboardCard(props) {
     const classes = useStyles();
-    const { countTitle, category, color, icon, description, isDefaultCard } = props;
+    const { countTitle, category, color, icon, description, isDefaultCard, handleOpenAlert, dataArr, setDataArr, cardsArr, setCardsArr } = props;
+            
+      // Verify Operation Variables:
+      const [openVerifyOperation, setOpenVerifyOperation] = useState(false);
+      const [verifyOperationTitle, setVerifyOperationTitle] = useState('Default Title');
+      const [verifyOperationText, setVerifyOperationText] = useState('Default Text');
+      const [verifyOperationBool, setVerifyOperationBool] = useState(false);
+  
+      // ---------------------------------------------------------------------------------------------------------------------------
+      // Verify Operation Functions:
+      /**
+       * A function in charge opening the verify operation dialog.
+       * @param {string} title - The title of the dialog.
+       * @param {string} text - The text of the dialog.
+       */
+      const handleOpenVerifyOperation = (title, text) => {
+        setOpenVerifyOperation(true);
+        setVerifyOperationTitle(title);
+        setVerifyOperationText(text);
+      }
+      // ---------------------------------------------------------------------------------------------------------------------------
+
+    // ------------------------------------------------------- Deleting a card -------------------------------------------------------
+    /**
+     * Attaching a listener to verifyOperationBool which will help us determine when the verifyOperation bool state changes.
+     * The main purpose of this function is to determine when the user verifies his selection to delete a certain card,
+     * and once we verify it then we should delete the selected card.
+     */
+    useEffect(() => {
+      if (verifyOperationBool === true){
+          deleteCard()
+          setVerifyOperationBool(false);
+      }
+    }, [verifyOperationBool]);
 
     /**
-     * A function in charge of handling a click on the edit button.
+     * A function in charge of prompting the user to choose whether he wants to delete the chosen card or not.
      */
-    const handleEditClick = () => {
-        console.log("Clicked on edit!");
+    const promptToDeleteCard = () => {
+        handleOpenVerifyOperation('Do you really want to delete the card ' + description
+        + '?', 'Once performed, this action can not be undone!');
     }
 
     /**
-     * A function in charge of handling a click on the delete button.
+     * A function in charge of setting the data arr to the received arr.
+     * @param {[cardRec]} arr - An array of card records.
      */
-    const handleDeleteClick = () => {
-        console.log("Clicked on delete!");
+    const handleSetDataArr = (arr) => {
+      setDataArr(arr);
     }
+
+    /**
+     * A function in charge of setting the cards arr to the received arr.
+     * @param {[cardRec]} arr - An array of card records.
+     */
+    const handleSetCardsArr = (arr) => {
+      setCardsArr(arr);
+    }
+
+    /**
+     * A function in charge of removing the current card from the dataArr & the cardsArr.
+     */
+    const removeCardFromArr = () => {
+      var tempCardsArr = dataArr.filter(cur => cur.description !== description);
+      var tempDataArr = dataArr.filter(cur => cur.description !== description);
+      handleSetCardsArr(tempCardsArr);
+      handleSetDataArr(tempDataArr);
+    }
+
+    const deleteCard = () => {
+      // Removing a card:
+      // 1. Removing it from the DB.
+      // 2. Removing it from the table.
+      // 3. "Alerting" the user to let them know that we removed the chosen card.
+      const db = fire.firestore();
+      const auth = fire.auth();
+      var query = db.collection("users").doc(auth.currentUser.uid).collection("cards").where("description", "==", description);
+      query.get().then(function(querySnapshot){
+        querySnapshot.forEach(function(doc){
+          doc.ref
+          .delete()
+          .catch(function(error){
+            handleOpenAlert("error", "An error has occurred. Please try again later!");
+          })
+        })
+        // Once we deleted the card we can also delete it from the array of cards (removing based on description):
+        removeCardFromArr();
+        // Alerting the user to let them know that we deleted the card:
+        handleOpenAlert("success", "Successfully deleted the card!");
+      })
+    }
+    // ------------------------------------------------------- Deleting a card -------------------------------------------------------
 
     return (
       <React.Fragment>
@@ -183,11 +258,8 @@ export default function DashboardCard(props) {
                             <FontAwesomeIcon icon={faMobileAlt} style={{width: '20px', height: '20px'}}/>
                         </IconButton>
                         <div>
-                            <IconButton className={classes.trashButton} style={{color: '#DB4D46'}} onClick={handleDeleteClick}>
-                                <DeleteIcon style={{width: '20px', height: '20px'}}></DeleteIcon>
-                            </IconButton>
-                            <IconButton className={classes.editButton} style={{color: '#ED9B3B'}} onClick={handleEditClick}>
-                                <EditIcon style={{width: '20px', height: '20px'}}></EditIcon>
+                            <IconButton className={classes.trashButton} style={{color: '#DB4D46'}} onClick={promptToDeleteCard}>
+                                <DeleteIcon style={{width: '24px', height: '24px'}}></DeleteIcon>
                             </IconButton>
                         </div>
                         {/* <Button variant="contained" color="danger" className={classes.deleteButton} onClick={console.log("CLICKED REMOVE")}>Remove</Button> */}
@@ -196,6 +268,8 @@ export default function DashboardCard(props) {
             }
           </Card>
         </Grid>
+        <VerifyOperation open={openVerifyOperation} setOpen={setOpenVerifyOperation} setBoolVal={setVerifyOperationBool}
+        dialogText={verifyOperationText} dialogTitle={verifyOperationTitle}/>
       </React.Fragment>
     );
   }

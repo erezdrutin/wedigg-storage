@@ -19,11 +19,8 @@
 import Dashboard from "@material-ui/icons/Dashboard";
 // core components/views for Admin layout
 import DashboardPage from "views/Dashboard/Dashboard.js";
-import Device from 'views/Device/Device.js';
-import Warehouse from 'views/Warehouse/Warehouse.js';
 import Supplier from 'views/Suppliers/Supplier.js';
 import Site from 'views/Sites/Site.js';
-import Product from 'views/Product/Product.js';
 import Storage from 'views/Storage/Storage.js';
 import TrackChanges from 'views/TrackChanges/TrackChanges.js';
 import SettingsPage from 'views/SettingsPage/SettingsPage.js';

@@ -13,6 +13,13 @@ import Grid from '@material-ui/core/Grid';
 // Styles:
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import { card } from "assets/jss/material-dashboard-react.js";
+// Alerts:
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles(styles);
   
@@ -35,13 +42,43 @@ export default function Dashboard(props) {
   // "useState" Variables Definition:
   const [openNewCard, setOpenNewCard] = useState(false);
   const [cardsArr, setCardsArr] = useState([]);
+
+  // Alert Variables:
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState('success');
+  const [alertText, setAlertText] = useState('');
+
+  // ---------------------------------------------------------------------------------------------------------------------------
+  // Alert Functions:
+  /**
+   * A function in charge of opening an alert.
+   * @param {string} severity - The color of the alert.
+   * @param {string} text - The text displayed in the alert.
+   */
+  const handleOpenAlert = (severity, text) => {
+    setAlertText(text);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+  /**
+   * A function in charge of closing an alert.
+   * @param {string} reason - A string representing the reason for closing the alert.
+   */
+  const handleCloseAlert = (reason) => {
+    // Not closing the alert in case of a click on the screen:
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlertOpen(false);
+  };
+  // ---------------------------------------------------------------------------------------------------------------------------
+
   
   /**
    * Setting the cards array to the received array.
    * @param {[cardRec]} arr - An array containing cardRec records (Objects).
    */
   const handleSetCardsArr = (arr) => {
-    console.log("EREZ ==> ", arr)
     setCardsArr(arr);
   }
 
@@ -86,27 +123,30 @@ export default function Dashboard(props) {
     {/* The following part is in charge of the cards on top of the page: */}
     
       <div>
-        {/* Add Card Button Section: */}
+        {/* Add Card Button Section - Allowing up to 4 custom cards: */}
         <Button
         variant="contained"
         color="warning"
         className={classes.addCardButton}
         endIcon={<Icon>add</Icon>}
-        onClick={() => {setOpenNewCard(true)}}
+        onClick={() => {cardsArr.length < 4 ? setOpenNewCard(true) : handleOpenAlert("error", "The maximum amount of custom cards allowed is 4!")}}
         style={colorButtonStyle}
         >
         Add Card
         </Button>
+        {/* Generating The 4 Default Cards (which are global) */}
         {GenerateDefaultCards()}
-        <Grid container item xs={12} spacing={4}>
-          {
-            cardsArr.length > 0 && <GenerateCustomCards db={db} cardsArr={cardsArr}></GenerateCustomCards>
-          }
-          {/* <DashboardCard countTitle="13" category="Devices" color="danger" icon="calendar_today" description="Total Managed Devices in Home at Israel" isDefaultCard={false}/> */}
-        </Grid>
+        {/* Generating The Custom Cards (which are specific to the current user) */}
+        {cardsArr.length > 0 && <GenerateCustomCards db={db} cardsArr={cardsArr} setCardsArr={setCardsArr} handleOpenAlert={handleOpenAlert}></GenerateCustomCards>}
       </div>
 
-      <NewCard open={openNewCard} handleCancel={() => {setOpenNewCard(false)}} handleOk={() => {setOpenNewCard(false)}}/>
+      <NewCard open={openNewCard} setOpenNewCard={setOpenNewCard} handleOpenAlert={handleOpenAlert} cardsArr={cardsArr} setCardsArr={setCardsArr}/>
+
+      <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity={alertSeverity}>
+            {alertText}
+        </Alert>
+      </Snackbar>
     </div>
   )
 }

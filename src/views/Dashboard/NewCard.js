@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { IconPicker } from 'react-fa-icon-picker';
 import fire from '../../fire.js';
+import GenerateAutoComplete from "./GenerateAutoComplete.js";
+import useStyles from "./NewCardStyles.js";
+import iconsArr from "./DashboardIcons.js";
 
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Grid, Input, Select, InputLabel, MenuItem, FormControl, Typography, Divider, Checkbox, ListItemIcon, ListItemText } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 // Form Icons:
 import TitleIcon from '@material-ui/icons/Title'; // Title
@@ -20,173 +19,16 @@ import LocalShippingIcon from '@material-ui/icons/LocalShipping'; // Supplier
 import BubbleChartIcon from '@material-ui/icons/BubbleChart'; // Storage
 import PersonIcon from '@material-ui/icons/Person'; // User
 import ScheduleIcon from '@material-ui/icons/Schedule'; // Warranty End Date
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    horDiv: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        float: 'left',
-        marginLeft: theme.spacing(1),
-    },
-    root: {
-      flexGrow: 1,
-      maxWidth: '75%',
-    },
-    textField: {
-      padding: theme.spacing(1),
-      textAlign: 'center',
-      color: theme.palette.text.secondary,
-    },
-    margin: {
-        margin: theme.spacing(1),
-    },
-    dialogPaper: {
-        height: '65vh',
-        width: '70vh',
-        textAlign: 'center',
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        width: '88%',
-    },
-    formControlSecondInSelectRow: {
-        margin: theme.spacing(1),
-        width: '115%',
-    },
-    formControlSelect:{
-        margin: theme.spacing(1),
-        width: '60%',
-    },
-    formControlAutoComplete:{
-        margin: theme.spacing(1),
-        width: '88%'
-    },
-    formControlSecondSelect:{
-        margin: theme.spacing(1),
-        width: '100%'
-    },
-    plusButton: {
-        marginTop: theme.spacing(3),
-        marginLeft: theme.spacing(-9),
-        marginRight: theme.spacing(7),
-    },
-    secondPlusButton: {
-        marginLeft: theme.spacing(3.5), 
-    },
-    selectGridItem: {
-        marginRight: theme.spacing(-5),
-    }
-  }),
-);
-
-function GenerateAutoComplete(props) {
-    const classes = useStyles();
-    const { acID, valuesArr, isMultiple, handleSetNewVal, tfLabel, isDisabled } = props;
-
-    /**
-     * A function in charge of returning a label (which will be presented in the AutoComplete TextField) that represents a certain option.
-     * @param {{*}} option - An option ({} / [] / string) representing a field.
-     */
-    const retrieveOptionLabel = (option) => {
-        if (acID.includes("site")){
-            return option.site;
-        } else if (acID.includes("owner")){
-            return option.fullName;
-        } else {
-            return option;
-        }
-    }
-
-    /**
-     * A function in charge of returning a label (which will be presented in the AutoComplete dropdown list) that represents a certain option.
-     * @param {{*}} option - An option ({} / [] / string) representing a field.
-     */
-    const retrieveOptionLabelList = (option) => {
-        if (acID.includes("site")){
-            return option.site;
-        } else if (acID.includes("owner")){
-            return option.fullName + " | " + option.email.split("@")[0] + "@...";
-        } else {
-            return option;
-        }
-    }
-
-    return (
-        <React.Fragment>
-            {
-                <FormControl variant="standard" className={classes.formControlAutoComplete}>
-                    <Autocomplete
-                        multiple={isMultiple}
-                        limitTags={1}
-                        key={valuesArr.length}
-                        disabled={isDisabled}
-                        id={acID}
-                        options={valuesArr}
-                        onChange={(event, newVal) => {handleSetNewVal(newVal)}}
-                        disableCloseOnSelect
-                        freeSolo
-                        getOptionLabel={(option) => retrieveOptionLabel(option)}
-                        renderOption={(option, { selected }) => (
-                        <React.Fragment>
-                            <Checkbox
-                            icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
-                            checkedIcon={<CheckBoxIcon fontSize="small" />}
-                            style={{ marginRight: 8 }}
-                            checked={selected}
-                            />
-                            {
-                                retrieveOptionLabelList(option)
-                            }
-                        </React.Fragment>
-                        )}
-                        renderInput={(params) => (
-                        <TextField {...params} variant="standard" size="small" label={tfLabel} placeholder=""/>
-                        )}
-                    />
-                </FormControl>
-            }
-            
-        </React.Fragment>
-    )
-}
+import { auth } from "firebase";
 
 export default function NewCard(props){
     const classes = useStyles();
-    const { open, handleCancel, handleOk} = props;
+    const { open, setOpenNewCard, handleOpenAlert, cardsArr, setCardsArr } = props;
     // Variables Definition:
     // 1. MUST FILL VARIABLES:
     const [description, setDescription] = useState(''); // Simple TextField
     const [color, setColor] = useState(''); // Simple TextField
     const [icon, setIcon] = useState(''); // Simple TextField
-    const [subject, setSubject] = useState(''); // Select between Device / Site / Supplier / Storage.
-
-    const [iconsArr, setIconsArr] = useState([
-        {"icon": "verified", "description": "Success"},
-        {"icon": "warning", "description": "Warning"},
-        {"icon": "schedule_icon", "description": "Clock"},
-        {"icon": "calendar_today", "description": "Calendar"},
-        {"icon": "build", "description": "Lab"},
-        {"icon": "grade", "description": "Important"},
-        {"icon": "tv", "description": "TV"},
-        {"icon": "phone_iphone", "description": "Phone"},
-        {"icon": "tablet_mac", "description": "Tablet"},
-        {"icon": "computer", "description": "Laptop"},
-        {"icon": "phonelink", "description": "Devices"},
-        {"icon": "location_on", "description": "Location"},
-        {"icon": "storage", "description": "Storage"},
-        {"icon": "cloud", "description": "Cloud"},
-        {"icon": "headset", "description": "Earphones"},
-        {"icon": "all_inbox", "description": "Drawer"},
-        {"icon": "account_box", "description": "Person"},
-        {"icon": "supervisor_account", "description": "People"},
-        {"icon": "explore", "description": "Explore"},
-        {"icon": "category", "description": "Category"},
-        {"icon": "local_shipping", "description": "Delivery"},
-        {"icon": "storefront", "description": "Supplier"},
-        {"icon": "delete", "description": "Trash"},
-    ])
 
     // 2. SITE RELATED VARIABLES:
     const [site, setSite] = useState(''); // AutoComplete (allow multiple sites).
@@ -199,7 +41,9 @@ export default function NewCard(props){
     const [ownersArr, setOwnersArr] = useState([]); // An array containing data regarding users.
     const [storagesArr, setStoragesArr] = useState([]); // An array containing data regarding storages.
     const [categoriesArr, setCategoriesArr] = useState([]); // An array containing data regarding categories.
-    const [suppliersArr, setSuppliersArr] = useState(['test', 'test2']); // An array containing data regarding suppliers.
+    const [suppliersDict, setSuppliersDict] = useState([]); // An array containing data regarding suppliers.
+    const [suppliersArr, setSuppliersArr] = useState([]); // An array containing data regarding suppliers.
+
 
     // 3. OTHER VARIABLES (FOR DEVICES):
     const [warrantyEndPeriod, setWarrantyEndPeriod] = useState(''); // Select (this week / this month / this year).
@@ -208,6 +52,112 @@ export default function NewCard(props){
 
     // A variable to retrieve data from the db:
     const db = fire.firestore();
+    const auth = fire.auth();
+
+
+    const handleCancel = () => {
+        setOpenNewCard(false);
+        clearInput();
+    }
+
+    const handleOk = () => {
+        if (verifyInput()){
+            handleAddCard();
+            setOpenNewCard(false);
+            clearInput();
+        }
+    }
+
+    /**
+     * A function in charge of determining whether the user's input is valid or not and accordingly return True / False.
+     */
+    const verifyInput = () => {
+        var isValid = true;
+        var errMessage = "";
+        // First verifying the card details section:
+        if (description === "" || color === "" || icon === "" || description.length < 2){
+            isValid = false;
+            errMessage = "Did you fill all the fields in the Card Details section?";
+        } else if (owner.length === 0 && site.length === 0){
+            isValid = false;
+            errMessage = "Did you choose a site / owner?";
+        } else if (cardsArr.filter(a => a.description.toLowerCase() === description.toLowerCase()).length > 0){
+            isValid = false;
+            errMessage = "The description you chose already exists!"
+        }
+        // Opening an alert in case the input isn't valid:
+        if (!isValid){
+            handleOpenAlert("error", errMessage);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * A function in charge of clearing the input received from the user.
+     */
+    const clearInput = () => {
+        setSite('');
+        setOwner('');
+        setCategory('');
+        setSupplier('');
+        setStorage('');
+        setWarrantyEndPeriod('');
+        setDescription('');
+        setIcon('');
+        setColor('');
+    }
+
+    /**
+     * A function in charge of retrieving the relevant details to creating a "card record", and then adding it to:
+     * 1. Adding the "card record" we create to the db.
+     * 2. Adding the "card record" we create to the list of cards that appear on our screen.
+     * Assuming both additions ended ok, we will open a success alert to let the user know that the operation was successful.
+     * Otherwise, we will open an error alert to let the user know that the operation wasn't successful.
+     */
+    const handleAddCard = () => {
+        // Defining a path to our user's card collection {/users/(uid)/cards}:
+        var docRef = db.collection("users").doc(auth.currentUser.uid).collection("cards");
+        // Defining a "card record":
+        var cardRec = {
+            description: description,
+            color: color,
+            icon: icon.icon,
+            site: site ? [...site.map(a => a.site)] : [],
+            owner: owner ? [... owner.map(a => a.uid)] : [],
+            category: [... category],
+            supplier: [... supplier],
+            storage: [... storage],
+            warrantyEndPeriod: warrantyEndPeriod
+        }
+        // Attempting to add the card record to the db:
+        docRef.
+        add(cardRec)
+        .then(function() {
+            console.log("Document successfully written!");
+            // Attempting to add the card record to the cardsArr:
+            var tempArr = cardsArr;
+            handleSetCardsArr([]);
+            tempArr.push(cardRec);
+            handleSetCardsArr(tempArr);
+            handleOpenAlert("success", "Successfully added the card!");
+        })
+        .catch(function(error) {
+            console.error("Error writing document: ", error);
+            handleOpenAlert("error", "Failed to add the card!");
+        });
+    }
+
+
+    /**
+     * A function in charge of setting the cardsArr based on the received array.
+     * @param {[cardRec]} arr - An array containing card records.
+     */
+    const handleSetCardsArr = (arr) => {
+        setCardsArr(arr);
+    }
+
 
     /**
      * A function in charge of setting the ownersArr based on the data retrieved from the db.
@@ -249,6 +199,32 @@ export default function NewCard(props){
         })
     }
 
+    /**
+     * A function in charge of setting the suppliersDict variable to the received dict.
+     * @param {suppliersDict} dict - An array with the select data. 
+     */
+    const handleSetSuppliersDict = (dict) => {
+        setSuppliersDict(dict);
+    }
+
+    /**
+     * A function in charge of retrieving the suppliersArr from the db.
+     */
+    const getSuppliersArrFromDb = () => {
+        var tempDict = {};
+        db.collection("suppliers").get().then(function(querySnapshot){
+            querySnapshot.forEach(function(doc){
+                var data = doc.data()
+                if (tempDict[data.site]){
+                    tempDict[data.site].push(data.supplierName);
+                } else {
+                    tempDict[data.site] = [data.supplierName];
+                }
+            })
+            handleSetSuppliersDict(tempDict);
+        })
+    }
+
     const getSitesArrFromDb = () => {
         var docRef = db.collection("sites");
         docRef.get().then(function(querySnapshot){
@@ -275,7 +251,7 @@ export default function NewCard(props){
     useEffect(() => {
         getOwnersArrFromDb();
         getSitesArrFromDb();
-        console.log("HI erez")
+        getSuppliersArrFromDb();
     }, []);
 
     const handleResetStorages = () => {
@@ -288,6 +264,11 @@ export default function NewCard(props){
         setCategoriesArr([]);
     }
 
+    const handleResetSuppliers = () => {
+        setSupplier('');
+        setSuppliersArr([]);
+    }
+
     /**
      * A function in charge of setting the categoriesArr & storagesArr based on the recieved "option".
      * We have 2 cases:
@@ -296,16 +277,17 @@ export default function NewCard(props){
      * @param {[siteRec]} option - An array of site records.
      */
     const handleSetSite = (option) => {
-        console.log("STO", storage)
-        console.log("CAT", category)
         // Setting the site variable to the received option:
         setSite(option);
+        
         if (option.length === 1){
             setCategoriesArr(option[0].categories);
             setStoragesArr(option[0].storages);
+            setSuppliersArr(suppliersDict[option[0].site] ? suppliersDict[option[0].site] : []);
         } else {
             handleResetStorages();
             handleResetCategories();
+            handleResetSuppliers();
         }
     }
 
@@ -328,7 +310,29 @@ export default function NewCard(props){
                         <TextFieldsIcon />
                     </Grid>
                     <Grid item item xs={11}>
-                        <TextField style={{width: '95%', marginBottom: '0.5vh'}} required id="input-card-description" label="Card Description" />
+                        {
+                            description && description.length < 2 ? (
+                                <TextField
+                                    style={{width: '95%', marginBottom: '0.5vh'}}
+                                    required
+                                    error
+                                    helperText="Description should be at least 2 characters."
+                                    id="input-card-description"
+                                    label="Card Description"
+                                    value={description}
+                                    onChange={(event) => setDescription(event.target.value)}
+                                />
+                            ) : (
+                                <TextField
+                                    style={{width: '95%', marginBottom: '0.5vh'}}
+                                    required
+                                    id="input-card-description"
+                                    label="Card Description"
+                                    value={description}
+                                    onChange={(event) => setDescription(event.target.value)}
+                                />
+                            )
+                        }
                     </Grid>
                 </Grid>
                 {/* End of Card Description Section */}
@@ -346,11 +350,11 @@ export default function NewCard(props){
                             value={color}
                             onChange={event => setColor(event.target.value)}
                             >
-                                <MenuItem value={"#74B66A"} style={{color: 'green'}}>Green</MenuItem>
-                                <MenuItem value={"#F2A641"} style={{color: 'orange'}}>Orange</MenuItem>
-                                <MenuItem value={"#60CFEA"} style={{color: 'cyan'}}>Cyan</MenuItem>
-                                <MenuItem value={"#E26556"} style={{color: 'red'}}>Red</MenuItem>
-                                <MenuItem value={"#A137BE"} style={{color: 'purple'}}>Purple</MenuItem>
+                                <MenuItem value={"success"} style={{color: 'green'}}>Green</MenuItem>
+                                <MenuItem value={"warning"} style={{color: 'orange'}}>Orange</MenuItem>
+                                <MenuItem value={"info"} style={{color: 'cyan'}}>Cyan</MenuItem>
+                                <MenuItem value={"danger"} style={{color: 'red'}}>Red</MenuItem>
+                                <MenuItem value={"primary"} style={{color: 'purple'}}>Purple</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>

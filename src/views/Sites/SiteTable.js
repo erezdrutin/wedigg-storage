@@ -7,7 +7,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Grid from '@material-ui/core/Grid';
 
 export default function SiteTable(props){
-    const { title, headerBackground, data, setData, handleOpenAlert, handleSetEditSite, setOpenEditSite, handleOpenVerifyOperation, verifyOperationBool, setVerifyOperationBool } = props;
+    const { title, headerBackground, data, setData, handleOpenAlert, handleSetEditSite, setOpenEditSite, handleOpenVerifyOperation,
+        verifyOperationBool, setVerifyOperationBool, setSiteCount, setStorageCount, getStoragesCount } = props;
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [currentSite, setCurrentSite] = useState('');
 
@@ -20,6 +21,21 @@ export default function SiteTable(props){
         setData(tempArr);
     }
 
+    /**
+     * A function in charge of updating our sites counter.
+     * @param {int} count - A count representing the amount of sites in our DB.
+     */
+    const handleSetSiteCount = (count) => {
+        setSiteCount(count);
+    }
+
+    /**
+     * A function in charge of updating our storages counter.
+     * @param {int} count - A count representing the amount of storages in our DB.
+     */
+    const handleSetStorageCount = (count) => {
+        setStorageCount(count);
+    }
 
     // ------------------------------------------------------- Deleting a site -------------------------------------------------------
     /**
@@ -50,11 +66,18 @@ export default function SiteTable(props){
         // 2. Removing the site from the table.
         // 3. "Alerting" the user to let him know that we removed the site from the db.
         const db = fire.firestore();
-        var delQuery = db.collection("sites").doc(currentSite.name)
+        var delQuery = db.collection("sites").doc(currentSite.name);
+        var newSiteCount = data.length - 1;
+        var newStorageCount = getStoragesCount() - currentSite.storageTypesArrCount;
+
         delQuery.delete()
         .then(function(){
             // Removing the site from the table:
             removeSiteFromTable(currentSite);
+            // Removing the device from our sites counter:
+            handleSetSiteCount(newSiteCount);
+            // Removing the device from our storages counter:
+            handleSetStorageCount(newStorageCount);
             // Alerting the user to let them know that we deleted the site(s):
             handleOpenAlert("success", "Successfully deleted the site!");
         })
@@ -64,25 +87,6 @@ export default function SiteTable(props){
         });
     }
     // ------------------------------------------------------- Deleting a site -------------------------------------------------------
-
-    // const deleteSite = (siteDetails) => {
-    //     // Defining variable to hold the connection to the db:
-    //     const db = fire.firestore();
-
-    //     // Deleting the site from the db:
-    //     const docRef = db.collection("sites").doc(siteDetails.name);
-    //     docRef.delete().then(function(){
-    //         // Then removing the site from the current table data:
-    //         var tempArr = data.filter(element => element.name.toLowerCase() !== siteDetails.name.toLowerCase());
-    //         setData(tempArr);
-    //         // Eventually letting the user know that the operation was successful:
-    //         handleOpenAlert("success", "Successfully deleted the site from the DB!");
-    //     }).catch(function(error){
-    //         // Letting the user know that the operation failed:
-    //         handleOpenAlert("error", "Failed to delete the site from the DB!");
-    //     })
-    //     console.log("Deleting device: ", siteDetails)
-    // }
 
     return (
         <MaterialTable

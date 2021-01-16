@@ -7,8 +7,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Grid from '@material-ui/core/Grid';
 
 export default function SupplierTable(props){
-    const { title, headerBackground, data, setData, handleOpenAlert, handleOpenVerifyOperation, 
-            setOpenEditSupplier, verifyOperationBool, setVerifyOperationBool, handleSetEditSupplier } = props;
+    const { title, headerBackground, data, setData, handleOpenAlert, handleOpenVerifyOperation,
+            setOpenEditSupplier, verifyOperationBool, setVerifyOperationBool, handleSetEditSupplier, setSupplierCount } = props;
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [currentSupplier, setCurrentSupplier] = useState('');
 
@@ -19,6 +19,14 @@ export default function SupplierTable(props){
     const removeSupplierFromTable = (supplier) => {
         var tempArr = data.filter(sup => sup !== supplier);
         setData(tempArr);
+    }
+
+    /**
+     * A function in charge of updating our devices counter.
+     * @param {int} count - A count representing the amount of devices in our DB.
+     */
+    const handleSetSupplierCount = (count) => {
+        setSupplierCount(count);
     }
 
 
@@ -52,6 +60,7 @@ export default function SupplierTable(props){
         // 3. "Alerting" the user to let him know that we removed the supplier from the db.
         const db = fire.firestore();
         var query = db.collection("suppliers").where("supplierName", "==", currentSupplier.supplierName);
+        var newSupCount = data.length - 1;
 
         // Deleting each record that stands by our terms (Expecting only 1 result):
         query.get().then(function(querySnapshot) {
@@ -60,6 +69,8 @@ export default function SupplierTable(props){
             })
             // Removing the supplier from the table:
             removeSupplierFromTable(currentSupplier);
+            // Removing the supplier from our suppliers counter:
+            handleSetSupplierCount(newSupCount);
             // Alerting the user to let them know that we deleted the supplier(s):
             handleOpenAlert("success", "Successfully deleted the supplier(s).");
         })
@@ -70,16 +81,12 @@ export default function SupplierTable(props){
     }
     // ------------------------------------------------------- Deleting a supplier -------------------------------------------------------
 
-    const editSupplier = (supplier) => {
-        console.log(supplier)
-    }
-
     return (
         <MaterialTable
             isLoading={data.length === 0}
             title={title}
             columns={[
-                { title: 'Actions', field: 'notes', render: rowData => (
+                { title: 'Actions', field: 'notes', export: false, render: rowData => (
                     <Grid>
                         <IconButton color="inherit" aria-label="edit device" style={{maxWidth: '32px', maxHeight: '32px'}} onClick={() => {
                             handleSetEditSupplier(rowData);
@@ -103,9 +110,6 @@ export default function SupplierTable(props){
             data={data}
             onRowClick={(evt, selectedRow) => {
                 setSelectedRowIndex(selectedRow.tableData.id);
-                (evt.target).ondblclick = () => {
-                    console.log(selectedRow);
-                }
             }}
             detailPanel={rowData => {
                 // Storing all the data relevant to the current row { Filtering by TIN }:
@@ -113,9 +117,6 @@ export default function SupplierTable(props){
                     return fd.tin === rowData.tin
                 })[0]
 
-
-
-                console.log(rowData.serial)
                 return (
                     <div>
                     <p style={{marginTop: '10px'}}>

@@ -15,7 +15,7 @@ export default function Footer(props) {
   return (
     <footer className={classes.footer}>
       <div className={classes.container}>
-        <div className={classes.left}>
+        {/* <div className={classes.left}>
           <List className={classes.list}>
             <ListItem className={classes.inlineBlock}>
               <a href="#home" className={classes.block}>
@@ -33,16 +33,16 @@ export default function Footer(props) {
               </a>
             </ListItem>
           </List>
-        </div>
-        <p className={classes.right}>
+        </div> */}
+        <p className={classes.center}>
           <span>
             &copy; {1900 + new Date().getYear()}{" "}
             <a
-              href="index.html"
+              href="https://www.wediggit.co.il/"
               target="_blank"
               className={classes.a}
             >
-              Wedigg Storage
+              Wediggit
             </a>
           </span>
         </p>
