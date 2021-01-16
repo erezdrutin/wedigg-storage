@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/wedigg-storage/precache-manifest.d04da11102e8be8e6e5bf82fa910f27e.js"
+  "/wedigg-storage/precache-manifest.2f965c5949f42655d751ada186ded05c.js"
 );
 
 self.addEventListener('message', (event) => {
