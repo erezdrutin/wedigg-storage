@@ -204,7 +204,7 @@ function App() {
     } else {
       auth
         .sendSignInLinkToEmail(email, {
-          url: "http://localhost:3000/admin/dashboard",
+          url: "https://erezdrutin.github.io/wedigg-storage/",
           handleCodeInApp: true,
         })
         .then(() => {

@@ -90,10 +90,10 @@ export default function NewSite(props) {
 
   // Variables Definition:
   const [name, setName] = useState(''); // TextField
-  const [storageTypesArr, setStorageTypesArr] = useState(['Home Storage', 'Lab', 'Other']); // A Select filled with some default values with (+) button to add more storages.
-  const [serviceTypesArr, setServiceTypesArr] = useState([]); // Empty Select with (+) button.
+  const [storageTypesArr, setStorageTypesArr] = useState(['Office', 'Home', 'Repair Lab']); // A Select filled with some default values with (+) button to add more storages.
+  const [serviceTypesArr, setServiceTypesArr] = useState(['Technician', 'Consultant', 'Delivery', 'Repair Lab']); // Empty Select with (+) button.
   const [suppliersArr, setSuppliersArr] = useState([]); // Empty Select with (+) button.
-  const [categoriesArr, setCategoriesArr] = useState([]); // Empty Select with (+) button.
+  const [categoriesArr, setCategoriesArr] = useState(['Workstation', 'Laptop', 'Accessories', 'Mobile', 'Tablet']); // Empty Select with (+) button.
   const [note, setNote] = useState('');
 
   // Popups variables:
