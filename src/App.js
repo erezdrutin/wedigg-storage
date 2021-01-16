@@ -18,10 +18,6 @@ import Link from '@material-ui/core/Link';
 import Box from '@material-ui/core/Box';
 import Button from "components/CustomButtons/Button.js";
 import LoginImage from "assets/img/login_img.svg";
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 
 // Alerts:
 import Snackbar from '@material-ui/core/Snackbar';

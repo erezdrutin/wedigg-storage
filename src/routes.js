@@ -29,7 +29,7 @@ const dashboardRoutes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    rtlName: "לוח",
+    rtlName: "לוח בקרה",
     icon: Dashboard,
     component: DashboardPage,
     layout: "/admin",
@@ -67,29 +67,13 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   {
-    path: "/Settings",
+    path: "/settings",
     name: "Settings",
     rtlName: "הגדרות",
     icon: "settings",
     component: SettingsPage,
     layout: "/admin",
   },
-  // {
-  //   path: "/warehouse",
-  //   name: "Warehouse",
-  //   rtlName: "אחסון",
-  //   icon: "storage",
-  //   component: Warehouse,
-  //   layout: "/admin",
-  // },
-  // {
-  //   path: "/product",
-  //   name: "Products",
-  //   rtlName: "מוצרים",
-  //   icon: "devices_other",
-  //   component: Product,
-  //   layout: "/admin",
-  // },
 ];
 
 export default dashboardRoutes;
