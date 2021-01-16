@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/wedigg-storage/static/css/main.765de1dd.chunk.css",
-    "main.js": "/wedigg-storage/static/js/main.7afaa256.chunk.js",
-    "main.js.map": "/wedigg-storage/static/js/main.7afaa256.chunk.js.map",
+    "main.js": "/wedigg-storage/static/js/main.80fdf039.chunk.js",
+    "main.js.map": "/wedigg-storage/static/js/main.80fdf039.chunk.js.map",
     "runtime-main.js": "/wedigg-storage/static/js/runtime-main.fb37f77f.js",
     "runtime-main.js.map": "/wedigg-storage/static/js/runtime-main.fb37f77f.js.map",
     "static/css/2.d0176e96.chunk.css": "/wedigg-storage/static/css/2.d0176e96.chunk.css",
@@ -15,7 +15,7 @@
     "static/js/5.0b5f426a.chunk.js": "/wedigg-storage/static/js/5.0b5f426a.chunk.js",
     "static/js/5.0b5f426a.chunk.js.map": "/wedigg-storage/static/js/5.0b5f426a.chunk.js.map",
     "index.html": "/wedigg-storage/index.html",
-    "precache-manifest.bbc7d9ac12fe889fc66a7e74f5e8f050.js": "/wedigg-storage/precache-manifest.bbc7d9ac12fe889fc66a7e74f5e8f050.js",
+    "precache-manifest.d04da11102e8be8e6e5bf82fa910f27e.js": "/wedigg-storage/precache-manifest.d04da11102e8be8e6e5bf82fa910f27e.js",
     "service-worker.js": "/wedigg-storage/service-worker.js",
     "static/css/2.d0176e96.chunk.css.map": "/wedigg-storage/static/css/2.d0176e96.chunk.css.map",
     "static/css/main.765de1dd.chunk.css.map": "/wedigg-storage/static/css/main.765de1dd.chunk.css.map",
@@ -23,7 +23,7 @@
     "static/js/3.5b18df40.chunk.js.LICENSE.txt": "/wedigg-storage/static/js/3.5b18df40.chunk.js.LICENSE.txt",
     "static/js/4.fe217c76.chunk.js.LICENSE.txt": "/wedigg-storage/static/js/4.fe217c76.chunk.js.LICENSE.txt",
     "static/js/5.0b5f426a.chunk.js.LICENSE.txt": "/wedigg-storage/static/js/5.0b5f426a.chunk.js.LICENSE.txt",
-    "static/js/main.7afaa256.chunk.js.LICENSE.txt": "/wedigg-storage/static/js/main.7afaa256.chunk.js.LICENSE.txt",
+    "static/js/main.80fdf039.chunk.js.LICENSE.txt": "/wedigg-storage/static/js/main.80fdf039.chunk.js.LICENSE.txt",
     "static/media/login_img.svg": "/wedigg-storage/static/media/login_img.31e1db52.svg",
     "static/media/logo_blurred_bg.png": "/wedigg-storage/static/media/logo_blurred_bg.3736b390.png",
     "static/media/sidebar-1.jpg": "/wedigg-storage/static/media/sidebar-1.8e9f0a3c.jpg",
@@ -36,6 +36,6 @@
     "static/css/2.d0176e96.chunk.css",
     "static/js/2.cdcb64d0.chunk.js",
     "static/css/main.765de1dd.chunk.css",
-    "static/js/main.7afaa256.chunk.js"
+    "static/js/main.80fdf039.chunk.js"
   ]
 }
