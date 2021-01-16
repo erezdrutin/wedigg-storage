@@ -319,9 +319,9 @@ export default function Site() {
       <GridItem xs={12} sm={12} md={12}>
         <Card>
           <CardHeader className={classes.headerColor}>
-            <h4 className={classes.cardTitleWhite}>Sites Table</h4>
+            <h4 className={classes.cardTitleWhite}>Your Sites</h4>
             <p className={classes.cardCategoryWhite}>
-              A table containing all the managed sites.
+              All your managed sites in one space.
             </p>
             
             <Button

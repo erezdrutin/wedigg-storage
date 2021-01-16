@@ -707,7 +707,7 @@ export default function Storage() {
             <Button className={otherClasses.filterButton} onClick={getFilteredDevicesFromDb}>Filter</Button>
 
             <StorageTable
-            title=""
+            title="Managed Devices"
             setOpenDeviceQr = {setOpenDeviceQr}
             headerBackground="#ffa21a" 
             data={storageDevices}

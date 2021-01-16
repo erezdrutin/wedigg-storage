@@ -150,11 +150,11 @@ export default function TrackChanges() {
           <CardHeader color="primary">
             <h4 className={classes.cardTitleWhite}>Track Changes</h4>
             <p className={classes.cardCategoryWhite}>
-              Track Changes Done Right. All the actions performed managed from one place.
+              All your managed devices changes in one space.
             </p>
           </CardHeader>
           <CardBody>
-            <TrackChangesTable title="Device Changes List" headerBackground="#9d36b3" data={changesData} usersData={usersArr} getFormattedDate={getFormattedDate}/>
+            <TrackChangesTable title="Managed Devices Changes" headerBackground="#9d36b3" data={changesData} usersData={usersArr} getFormattedDate={getFormattedDate}/>
           </CardBody>
         </Card>
       </GridItem>

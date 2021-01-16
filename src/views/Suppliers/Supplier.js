@@ -360,9 +360,9 @@ export default function Supplier() {
       <GridItem xs={12} sm={12} md={12}>
         <Card>
           <CardHeader className={classes.headerColor}>
-            <h4 className={classes.cardTitleWhite}>Suppliers Table</h4>
+            <h4 className={classes.cardTitleWhite}>Your Suppliers</h4>
             <p className={classes.cardCategoryWhite}>
-              A table containing all the suppliers.
+              All your managed suppliers in once space.
             </p>
             
             <Button
