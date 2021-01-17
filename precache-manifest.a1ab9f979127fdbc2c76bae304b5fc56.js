@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "51cd64875fd95bee49c6ea933e18bb28",
+    "revision": "fc26fd1088963e2c34474c67debbc45f",
     "url": "/wedigg-storage/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/wedigg-storage/static/css/2.d0176e96.chunk.css"
   },
   {
-    "revision": "722fc687fef7c2fe19ec",
+    "revision": "0c736c048e6b0b4795ae",
     "url": "/wedigg-storage/static/css/main.765de1dd.chunk.css"
   },
   {
@@ -44,12 +44,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/wedigg-storage/static/js/5.0b5f426a.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "722fc687fef7c2fe19ec",
-    "url": "/wedigg-storage/static/js/main.eb210350.chunk.js"
+    "revision": "0c736c048e6b0b4795ae",
+    "url": "/wedigg-storage/static/js/main.45a3f390.chunk.js"
   },
   {
     "revision": "f7bdf0cfc9ea0dd44285692948c2d84f",
-    "url": "/wedigg-storage/static/js/main.eb210350.chunk.js.LICENSE.txt"
+    "url": "/wedigg-storage/static/js/main.45a3f390.chunk.js.LICENSE.txt"
   },
   {
     "revision": "398eba664e1821b854eb",
