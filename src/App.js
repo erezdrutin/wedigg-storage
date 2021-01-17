@@ -228,7 +228,7 @@ function App() {
  */
 const isValidUser = () => {
   // Here some GET will be performed and we will receive some object built like so:
-  return users.filter(cur => cur.email === email).length
+  return users.filter(cur => cur.email.toLowerCase() === email.toLowerCase()).length
   // var siteUsers = []
   // users.forEach(curUser => {
   //   if (curUser.work.site.toLowerCase() === site.toLowerCase()){
