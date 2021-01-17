@@ -134,8 +134,48 @@ function App() {
       email: "tippoyt@gmail.com",
       displayName: "Tippo",
       work:{
-        title: "user",
+        title: "manager",
         site: "USA"
+      }
+    },
+    {
+      email: "appsboss7@gmail.com",
+      displayName: "Boss",
+      work:{
+        title: "manager",
+        site: "UK"
+      }
+    },
+    {
+      email: "naty@wediggit.co.il",
+      displayName: "Naty",
+      work:{
+        title: "manager",
+        site: "Israel"
+      }
+    },
+    {
+      email: "mk@wediggit.co.il",
+      displayName: "Moshe Kepten",
+      work:{
+        title: "manager",
+        site: "Israel"
+      }
+    },
+    {
+      email: "meital@wediggit.co.il",
+      displayName: "Meital Reiss",
+      work:{
+        title: "manager",
+        site: "Israel"
+      }
+    },
+    {
+      email: "doron@wediggit.co.il",
+      displayName: "Doron Kerub",
+      work:{
+        title: "manager",
+        site: "Israel"
       }
     }
   ]
@@ -200,7 +240,7 @@ function App() {
     } else {
       auth
         .sendSignInLinkToEmail(email, {
-          url: "https://erezdrutin.github.io/wedigg-storage/",
+          url: "https://erezdrutin.github.io/",
           handleCodeInApp: true,
         })
         .then(() => {
@@ -277,9 +317,8 @@ const isValidUser = () => {
         })
         // Then we should add the document.
         usersRef.set({
-          name: userDetails.displayName,
+          fullName: userDetails.displayName,
           email: userDetails.email,
-          cards: ["0,primary", "1,info", "2,success", "3,danger", "4,info", "5,warning"],
           position: userDetails.work.title,
           site: userDetails.work.site
         })
