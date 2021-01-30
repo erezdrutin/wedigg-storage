@@ -16,6 +16,9 @@ const dashboardStyle = {
   addCardButton: {
     width: '100px',
     float: 'right',
+    maxWidth: '10%',
+    float: 'right',
+    marginTop: '-47px'
   },
   stats: {
     color: grayColor[0],

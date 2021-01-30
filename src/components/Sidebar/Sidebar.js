@@ -31,16 +31,9 @@ export default function Sidebar(props) {
       {routes.map((prop, key) => {
         var activePro = " ";
         var listItemClasses;
-        if (prop.path === "/upgrade-to-pro") {
-          activePro = classes.activePro + " ";
-          listItemClasses = classNames({
-            [" " + classes[color]]: true
-          });
-        } else {
-          listItemClasses = classNames({
-            [" " + classes[color]]: activeRoute(prop.layout + prop.path)
-          });
-        }
+        listItemClasses = classNames({
+          [" " + classes[color]]: activeRoute(prop.layout + prop.path)
+        });
         const whiteFontClasses = classNames({
           [" " + classes.whiteFont]: activeRoute(prop.layout + prop.path)
         });
@@ -87,7 +80,6 @@ export default function Sidebar(props) {
         className={classNames(classes.logoLink, {
           [classes.logoLinkRTL]: props.rtlActive
         })}
-        target="_blank"
       >
         <div className={classes.logoImage}>
           <img src={logo} alt="logo" className={classes.img} />

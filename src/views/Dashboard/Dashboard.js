@@ -3,6 +3,8 @@ import DashboardCard from "./DashboardCard.js";
 import GenerateDefaultCards from "./DefaultDashboardCards.js";
 import GenerateCustomCards from "./CustomDashboardCards.js";
 import NewCard from './NewCard.js';
+import DashboardTable from './DashboardTable.js';
+import GenerateAutoComplete from "./GenerateAutoComplete.js";
 import fire from '../../fire.js';
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,6 +15,10 @@ import Grid from '@material-ui/core/Grid';
 // Styles:
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import { card } from "assets/jss/material-dashboard-react.js";
+// Cards:
+import Card from "components/Card/Card.js";
+import CardHeader from "components/Card/CardHeader.js";
+import CardBody from "components/Card/CardBody.js";
 // Alerts:
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
@@ -119,10 +125,12 @@ export default function Dashboard(props) {
   }, []);
 
   return (
-    <div>
-    {/* The following part is in charge of the cards on top of the page: */}
-    
-      <div>
+    <Card>
+      <CardHeader color="primary">
+        <h4 className={classes.cardTitleWhite}>Your Dashboard</h4>
+        <p className={classes.cardCategoryWhite}>
+          All your devices and actions in one space.
+        </p>
         {/* Add Card Button Section - Allowing up to 4 custom cards: */}
         <Button
         variant="contained"
@@ -134,19 +142,83 @@ export default function Dashboard(props) {
         >
         Add Card
         </Button>
-        {/* Generating The 4 Default Cards (which are global) */}
-        {GenerateDefaultCards()}
-        {/* Generating The Custom Cards (which are specific to the current user) */}
-        {cardsArr.length > 0 && <GenerateCustomCards db={db} cardsArr={cardsArr} setCardsArr={setCardsArr} handleOpenAlert={handleOpenAlert}></GenerateCustomCards>}
-      </div>
+      </CardHeader>
+      <CardBody>
+        {/* The following part is in charge of the cards on top of the page: */}
+          <Grid style={{display: 'flex', marginTop: '0.5rem', marginBottom: '3.5rem'}}>
+            <div style={{width: '80%'}}>
+              <Grid container xs={12}>
+                  <Grid item xs={2}>
+                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Owner" isDisabled={false} />
+                  </Grid>
+                  <Grid item xs={2} style={{width: '75%'}}>
+                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Site" isDisabled={false} />
+                  </Grid>
+                  <Grid item xs={2} style={{width: '75%'}}>
+                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Storage" isDisabled={false} />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Category" isDisabled={false} />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Supplier" isDisabled={false} />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Warranty" isDisabled={false} />
+                  </Grid>
+              </Grid>
+            </div>
+            <div style={{width: '20%', marginLeft: '0.5rem'}}>
+              <Grid container xs={12}>
+                <Grid item xs={6}>
+                  <Button
+                  variant="contained"
+                  color="warning"
+                  endIcon={<Icon>search</Icon>}
+                  onClick={() => {cardsArr.length < 4 ? setOpenNewCard(true) : handleOpenAlert("error", "The maximum amount of custom cards allowed is 4!")}}
+                  style={colorButtonStyle}
+                  >
+                  Filter
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
+          </Grid>
+          {/* <Grid item xs={12}> */}
+              {/* Generating The 4 Default Cards (which are global) */}
+              {/* {GenerateDefaultCards()} */}
+              {/* Generating The Custom Cards (which are specific to the current user) */}
+              {/* {cardsArr.length > 0 && <GenerateCustomCards db={db} cardsArr={cardsArr} setCardsArr={setCardsArr} handleOpenAlert={handleOpenAlert}></GenerateCustomCards>} */}
+          {/* </Grid> */}
+          <Grid container xs={12} spacing={8}>
+            <Grid item xs={6}>
+              <DashboardTable title="Managed Devices" headerBackground="#363636" data={[]} />
+            </Grid>
+            <Grid container xs={6} spacing={2}>
+              <Grid item xs={6}>
+                <DashboardCard countTitle={4} category="Sites" color="warning" icon="location_on" description="Total Managed Sites" isDefaultCard={true}/>
+              </Grid>
+              <Grid item xs={6}>
+                <DashboardCard countTitle={9} category="Storages" color="primary" icon="storage" description="Total Managed Storages" isDefaultCard={true}/>
+              </Grid>
+              <Grid item xs={6} style={{marginTop: '-2.5rem'}}>
+                <DashboardCard countTitle={3} category="Devices" color="info" icon="tv" description="Total Managed Devices" isDefaultCard={true}/>
+              </Grid>
+              <Grid item xs={6} style={{marginTop: '-2.5rem'}}>
+                <DashboardCard countTitle={4} category="Suppliers" color="success" icon="storefront" description="Total Managed Suppliers" isDefaultCard={true}/>
+              </Grid>
+            </Grid>
+          </Grid>
 
-      <NewCard open={openNewCard} setOpenNewCard={setOpenNewCard} handleOpenAlert={handleOpenAlert} cardsArr={cardsArr} setCardsArr={setCardsArr}/>
+          <NewCard open={openNewCard} setOpenNewCard={setOpenNewCard} handleOpenAlert={handleOpenAlert} cardsArr={cardsArr} setCardsArr={setCardsArr}/>
 
-      <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
-        <Alert onClose={handleCloseAlert} severity={alertSeverity}>
-            {alertText}
-        </Alert>
-      </Snackbar>
-    </div>
+
+          <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
+            <Alert onClose={handleCloseAlert} severity={alertSeverity}>
+                {alertText}
+            </Alert>
+          </Snackbar>
+      </CardBody>
+    </Card>
   )
 }

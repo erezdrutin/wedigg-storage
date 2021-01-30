@@ -2,20 +2,20 @@
   "name": "Wedigg Storage",
   "homepage": "https://erezdrutin.github.io/wedigg-storage/",
   "authors": [
-    "creative-tim"
+    "erez-drutin"
   ],
-  "description": "A Badass Material-UI Kit based on Material Design",
+  "description": "A storages management app.",
   "main": "public/index.html",
   "keywords": [
-    "material",
-    "design",
-    "material-ui",
-    "material",
-    "design",
+    "wedigg-storage",
+    "wediggit",
+    "wediggit-storage",
+    "wediggit storage",
+    "wedigg storage",
     "google",
     "twitter"
   ],
-  "license": "Creative TIM License",
+  "license": "Erez Drutin License",
   "ignore": [
     "**/.*",
     "node_modules",

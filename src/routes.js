@@ -24,6 +24,7 @@ import Site from 'views/Sites/Site.js';
 import Storage from 'views/Storage/Storage.js';
 import TrackChanges from 'views/TrackChanges/TrackChanges.js';
 import SettingsPage from 'views/SettingsPage/SettingsPage.js';
+import Management from 'views/Management/Management.js';
 
 const dashboardRoutes = [
   {
@@ -40,6 +41,14 @@ const dashboardRoutes = [
     rtlName: "אחסון",
     icon: "storage",
     component: Storage,
+    layout: "/admin",
+  },
+  {
+    path: "/management",
+    name: "Management",
+    rtlName: "ניהול",
+    icon: "business_center",
+    component: Management,
     layout: "/admin",
   },
   {

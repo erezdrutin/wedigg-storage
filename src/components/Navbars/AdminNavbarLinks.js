@@ -57,7 +57,7 @@ export default function AdminNavbarLinks() {
   };
 
   const handleSettings = () => {
-    hist.replace('/admin/Settings')
+    hist.replace('/admin/settings')
     setOpenProfile(null);
   }
 
