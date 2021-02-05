@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React from "react";
+import React, { useState } from "react";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
@@ -14,6 +14,11 @@ import Icon from "@material-ui/core/Icon";
 // core components
 import AdminNavbarLinks from "components/Navbars/AdminNavbarLinks.js";
 import RTLNavbarLinks from "components/Navbars/RTLNavbarLinks.js";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import MenuItem from "@material-ui/core/MenuItem";
+import MenuList from "@material-ui/core/MenuList";
+import Grow from "@material-ui/core/Grow";
+import Divider from "@material-ui/core/Divider";
 
 import styles from "assets/jss/material-dashboard-react/components/sidebarStyle.js";
 
@@ -21,9 +26,14 @@ const useStyles = makeStyles(styles);
 
 export default function Sidebar(props) {
   const classes = useStyles();
+  const [managementToggle, setManagementToggle] = useState(false);
   // verifies if routeName is the one active (in browser input)
   function activeRoute(routeName) {
-    return window.location.href.indexOf(routeName) > -1 ? true : false;
+    if (routeName === "/admin/management"){
+      return window.location.href.indexOf("/admin/supplier") > -1 || window.location.href.indexOf("/admin/site") > -1
+    } else {
+      return window.location.href.indexOf(routeName) > -1 ? true : false;
+    }
   }
   const { color, logo, image, logoText, routes } = props;
   var links = (
@@ -38,37 +48,101 @@ export default function Sidebar(props) {
           [" " + classes.whiteFont]: activeRoute(prop.layout + prop.path)
         });
         return (
-          <NavLink
-            to={prop.layout + prop.path}
-            className={activePro + classes.item}
-            activeClassName="active"
-            key={key}
-          >
-            <ListItem button className={classes.itemLink + listItemClasses}>
-              {typeof prop.icon === "string" ? (
-                <Icon
-                  className={classNames(classes.itemIcon, whiteFontClasses, {
-                    [classes.itemIconRTL]: props.rtlActive
+          <div>
+            {prop.name.toLowerCase() === "management" ? (
+              <ListItem button className={classes.itemLink + listItemClasses} onClick={() => setManagementToggle(!managementToggle)}>
+                {typeof prop.icon === "string" ? (
+                  <Icon
+                    className={classNames(classes.itemIcon, whiteFontClasses, {
+                      [classes.itemIconRTL]: props.rtlActive
+                    })}
+                  >
+                    {prop.icon}
+                  </Icon>
+                ) : (
+                  <prop.icon
+                    className={classNames(classes.itemIcon, whiteFontClasses, {
+                      [classes.itemIconRTL]: props.rtlActive
+                    })}
+                  />
+                )}
+                <ListItemText
+                  primary={props.rtlActive ? prop.rtlName : prop.name}
+                  className={classNames(classes.itemText, whiteFontClasses, {
+                    [classes.itemTextRTL]: props.rtlActive
                   })}
-                >
-                  {prop.icon}
-                </Icon>
-              ) : (
-                <prop.icon
-                  className={classNames(classes.itemIcon, whiteFontClasses, {
-                    [classes.itemIconRTL]: props.rtlActive
-                  })}
+                  disableTypography={true}
                 />
-              )}
-              <ListItemText
-                primary={props.rtlActive ? prop.rtlName : prop.name}
-                className={classNames(classes.itemText, whiteFontClasses, {
-                  [classes.itemTextRTL]: props.rtlActive
-                })}
-                disableTypography={true}
-              />
-            </ListItem>
-          </NavLink>
+                {managementToggle ? (
+                  <div>
+                  <NavLink
+                    to={"/admin/site"}
+                    className={activePro + classes.item}
+                    activeClassName="active"
+                    key="admin_site"
+                  >
+                    <ListItem button className={classes.itemLink + listItemClasses}>
+                      <Icon className={classNames(classes.itemIcon, whiteFontClasses, {[classes.itemIconRTL]: props.rtlActive })}>{"place"}</Icon>
+                      <ListItemText
+                        primary={"Site"}
+                        className={classNames(classes.itemText, whiteFontClasses, {[classes.itemTextRTL]: props.rtlActive})}
+                        disableTypography={true}
+                      />
+                    </ListItem>
+                  </NavLink>
+
+                  <NavLink
+                    to={"/admin/supplier"}
+                    className={activePro + classes.item}
+                    activeClassName="active"
+                    key="admin_supplier"
+                  >
+                    <ListItem button className={classes.itemLink + listItemClasses}>
+                      <Icon className={classNames(classes.itemIcon, whiteFontClasses, {[classes.itemIconRTL]: props.rtlActive })}>{"local_shipping"}</Icon>
+                      <ListItemText
+                        primary={"Supplier"}
+                        className={classNames(classes.itemText, whiteFontClasses, {[classes.itemTextRTL]: props.rtlActive})}
+                        disableTypography={true}
+                      />
+                    </ListItem>
+                  </NavLink>
+                  </div>
+                ) : ('')}
+              </ListItem>
+            ): (
+            <NavLink
+              to={prop.layout + prop.path}
+              className={activePro + classes.item}
+              activeClassName="active"
+              key={key}
+            >
+              <ListItem button className={classes.itemLink + listItemClasses}>
+                {typeof prop.icon === "string" ? (
+                  <Icon
+                    className={classNames(classes.itemIcon, whiteFontClasses, {
+                      [classes.itemIconRTL]: props.rtlActive
+                    })}
+                  >
+                    {prop.icon}
+                  </Icon>
+                ) : (
+                  <prop.icon
+                    className={classNames(classes.itemIcon, whiteFontClasses, {
+                      [classes.itemIconRTL]: props.rtlActive
+                    })}
+                  />
+                )}
+                <ListItemText
+                  primary={props.rtlActive ? prop.rtlName : prop.name}
+                  className={classNames(classes.itemText, whiteFontClasses, {
+                    [classes.itemTextRTL]: props.rtlActive
+                  })}
+                  disableTypography={true}
+                />
+              </ListItem>
+            </NavLink>
+            )}
+          </div>
         );
       })}
     </List>

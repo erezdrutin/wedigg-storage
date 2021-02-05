@@ -48,6 +48,7 @@ export default function Dashboard(props) {
   // "useState" Variables Definition:
   const [openNewCard, setOpenNewCard] = useState(false);
   const [cardsArr, setCardsArr] = useState([]);
+  const [devicesArr, setDevicesArr] = useState([]);
 
   // Alert Variables:
   const [alertOpen, setAlertOpen] = useState(false);
@@ -88,6 +89,17 @@ export default function Dashboard(props) {
     setCardsArr(arr);
   }
 
+  useEffect(() => {
+    var tempArr = [
+      {deviceName: "iPhone 12 Pro", serial: "C74N93F4N", sku: "MGK33LL/A", warrantyEndPeriod: "12/12/2023"},
+      {deviceName: 'Macbook Pro 16"', serial: "C8YNNF4P99N", sku: "MGKOPD3L/A", warrantyEndPeriod: "11/10/2021"},
+      {deviceName: 'iPad Pro 11" 2020', serial: "CY3P6FMPL4N", sku: "MY232LL/A", warrantyEndPeriod: "09/06/2022"},
+      {deviceName: "Apple TV 4K", serial: "C8YNNF4PN", sku: "MQD22HB/A", warrantyEndPeriod: "30/07/2021"},
+      {deviceName: "Airpods Pro", serial: "COY7TP3N", sku: "MWP22AM/A", warrantyEndPeriod: "01/04/2023"},
+      {deviceName: "Apple Watch Series 6 44m", serial: "C7L8FTGN", sku: "M02E3LL/A", warrantyEndPeriod: "27/03/2022"},
+    ]
+    setDevicesArr(tempArr);
+  }, [])
   /**
    * A function in charge of retrieving the current user's cards from the db.
    */
@@ -126,13 +138,13 @@ export default function Dashboard(props) {
 
   return (
     <Card>
-      <CardHeader color="primary">
+      <CardHeader className={classes.headerColor}>
         <h4 className={classes.cardTitleWhite}>Your Dashboard</h4>
         <p className={classes.cardCategoryWhite}>
           All your devices and actions in one space.
         </p>
         {/* Add Card Button Section - Allowing up to 4 custom cards: */}
-        <Button
+        {/* <Button
         variant="contained"
         color="warning"
         className={classes.addCardButton}
@@ -141,7 +153,7 @@ export default function Dashboard(props) {
         style={colorButtonStyle}
         >
         Add Card
-        </Button>
+        </Button> */}
       </CardHeader>
       <CardBody>
         {/* The following part is in charge of the cards on top of the page: */}
@@ -192,7 +204,7 @@ export default function Dashboard(props) {
           {/* </Grid> */}
           <Grid container xs={12} spacing={8}>
             <Grid item xs={6}>
-              <DashboardTable title="Managed Devices" headerBackground="#363636" data={[]} />
+              <DashboardTable title="Managed Devices" headerBackground="#363636" data={devicesArr} />
             </Grid>
             <Grid container xs={6} spacing={2}>
               <Grid item xs={6}>

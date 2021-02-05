@@ -15,10 +15,10 @@ export default function DashboardTable(props){
             isLoading={data.length === 0}
             title={title}
             columns={[
-                { title: 'Product', field: 'name' },
-                { title: 'Serial', field: 'storageTypesArrCount' },
-                { title: 'SKU', field: 'storageTypesArr' },
-                { title: 'Warranty', field: 'suppliersArrCount' },
+                { title: 'Product', field: 'deviceName' },
+                { title: 'Serial', field: 'serial' },
+                { title: 'SKU', field: 'sku' },
+                { title: 'Warranty', field: 'warrantyEndPeriod' },
             ]}
             data={data}
             onRowClick={(evt, selectedRow) => {

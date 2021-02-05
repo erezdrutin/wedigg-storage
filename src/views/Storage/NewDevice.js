@@ -32,6 +32,8 @@ import {
 // New Device Icons In Form:
 import LaptopMacIcon from '@material-ui/icons/LaptopMac'; // Product
 import DevicesOtherIcon from '@material-ui/icons/DevicesOther'; // Category
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord'; // Status
+import BookmarksIcon from '@material-ui/icons/Bookmarks'; // SKU
 import EmojiSymbolsIcon from '@material-ui/icons/EmojiSymbols'; // Serial
 import CreditCardIcon from '@material-ui/icons/CreditCard'; // Price
 import DescriptionIcon from '@material-ui/icons/Description'; // Certificate
@@ -62,8 +64,8 @@ const useStyles = makeStyles((theme) =>
         margin: theme.spacing(1),
     },
     dialogPaper: {
-        minHeight: '80vh',
-        maxHeight: '80vh',
+        minHeight: '85vh',
+        maxHeight: '85vh',
     },
     formControl: {
         margin: theme.spacing(1),
@@ -478,14 +480,14 @@ export default function NewDevice(props) {
             classes={{ paper: classes.dialogPaper }}
         >
             <DialogTitle id="alert-dialog-title">
-            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center',}}>
+            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '-1rem'}}>
                 <h6 style={{marginTop: '0.5rem'}}>Would you like to add a new device?</h6>
-                <Button
+                {/* <Button
                     className={classes.refreshButton}
                     style={{marginLeft: '2rem'}}
                 >
                     <CachedIcon/>
-                </Button>
+                </Button> */}
             </div>
             </DialogTitle>
             
@@ -777,6 +779,71 @@ export default function NewDevice(props) {
                 </Grid>
                 
                 {/* ---- Fifth Row ---- */}
+                <Grid container item spacing={3}>
+                    {/* Product Name */}
+                    <Grid item xs={6}>
+                        { name !== '' && name.length < 2 ?
+                        <TextField
+                            error
+                            helperText="Name should be at least 2 characters."
+                            className={classes.margin}
+                            id="newDeviceName"
+                            label="SKU"
+                            style={{width: '90%'}}
+                            value={name}
+                            onChange={(event) => {setName(event.target.value)}}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <BookmarksIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        /> : 
+                        <TextField
+                            className={classes.margin}
+                            id="newDeviceName"
+                            label="SKU"
+                            style={{width: '90%'}}
+                            value={name}
+                            onChange={(event) => {setName(event.target.value)}}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <BookmarksIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    }
+                    </Grid>
+                    {/* Product Storage Type */}
+                    <Grid item style={{marginLeft: '5px', marginTop: '2rem'}}>
+                        <FiberManualRecordIcon />
+                    </Grid>
+                    <Grid item xs={5} className={classes.selectGridItem} style={{marginLeft: '-20px'}}>
+                        <FormControl className={classes.formControlSecondSelect}>
+                            <InputLabel id="select-device-storage-type-label">Status</InputLabel>
+                            <Select
+                                style={{width: '89%'}}
+                                labelId="select-device-storage-type-label"
+                                id="select-device-supplier"
+                                value={category}
+                                onChange={(event) => {setCategory(event.target.value)}}
+                                input={<Input />}
+                            >
+                                <MenuItem value="">
+                                <em>None</em>
+                                </MenuItem>
+                                {deviceCategoriesArr && deviceCategoriesArr.map((option, index) => (
+                                    <MenuItem key={"deviceCategoriesArr", index+1} value={option}>{option}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                </Grid>
+                
+                {/* ---- Sixth Row ---- */}
                 <Grid container item spacing={1} alignItems="flex-end">
                     <Grid item xs={6}>
                         <TextField
@@ -819,7 +886,7 @@ export default function NewDevice(props) {
                     </Grid>
                 </Grid>
             
-                {/* ---- Sixth Row ---- */}
+                {/* ---- Seventh Row ---- */}
                 <Grid container item spacing={3}>
                     {/* Product Serial */}
                     <Grid item xs={6}>
@@ -875,7 +942,7 @@ export default function NewDevice(props) {
                 </Grid>
 
 
-                {/* ---- Seventh Row ---- */}
+                {/* ---- Eighth Row ---- */}
                 <Grid container item spacing={3} style={{marginTop: '-1rem'}}>
                 {/* Product Serial */}
                 <Grid item xs={12}>
@@ -899,7 +966,7 @@ export default function NewDevice(props) {
 
 
 
-                {/* ---- Eigth Row ---- */}
+                {/* ---- Ninth Row ---- */}
                 <Grid container item spacing={3}>
                     {/* Product Serial */}
                     <Grid item xs={12}>
