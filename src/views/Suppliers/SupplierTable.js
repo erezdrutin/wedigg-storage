@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import fire from '../../fire.js';
 import IconButton from '@material-ui/core/IconButton';
+import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Grid from '@material-ui/core/Grid';
@@ -81,6 +82,56 @@ export default function SupplierTable(props){
     }
     // ------------------------------------------------------- Deleting a supplier -------------------------------------------------------
 
+
+    const duplicateSupplier = (rowData) => {
+        const materialTable = props.materialTableRef.current;
+        materialTable.dataManager.changeRowEditing();
+        
+        // const materialTable = this.materialTableRef.current;
+
+        // this.setState({
+        //     initialFormData: {
+        //     ...rowData,
+        //     name: null,
+        //     },
+        // });
+
+        // materialTable.dataManager.changeRowEditing();
+        // materialTable.setState({
+        //     ...materialTable.dataManager.getRenderState(),
+        //     showAddRow: true,
+        // });
+    }
+
+    // useEffect(() => {
+    //     gridData.resolve();
+      
+    //     // update columns from props
+    //     setcolumns(props.col);
+    // }, [gridData, props.col]);
+
+    const onRowUpdate = (newData, newDataId) =>
+        new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const dataUpdate = [...data];
+            const index = newDataId;
+            dataUpdate[index] = newData;
+            setData([...dataUpdate]);
+
+            resolve();
+        }, 1000)
+    })
+
+    const onRowAdd = (newData) => 
+        new Promise((resolve, reject) => {
+            setTimeout(() => {
+                //newData.tableData.id = data.length-1;
+                setData([...data, newData]);
+                onRowUpdate(newData, newData.tableData.id);
+                resolve();
+            }, 1000)
+    });
+
     return (
         <MaterialTable
             isLoading={data.length === 0}
@@ -88,6 +139,11 @@ export default function SupplierTable(props){
             columns={[
                 { title: 'Actions', field: 'notes', export: false, render: rowData => (
                     <Grid>
+                    <IconButton color="inherit" aria-label="duplicate device" style={{maxWidth: '32px', maxHeight: '32px'}} onClick={() => {
+                        onRowAdd({supplierName: 'erez', address: 'test', serviceType: 'testing', contact: 'testos', site: 'testorino', sla: 'slaTest', tin: 'tinTest'});
+                    }}>
+                        <AddToPhotosIcon />
+                    </IconButton>
                         <IconButton color="inherit" aria-label="edit device" style={{maxWidth: '32px', maxHeight: '32px'}} onClick={() => {
                             handleSetEditSupplier(rowData);
                             setOpenEditSupplier(true);
@@ -141,6 +197,20 @@ export default function SupplierTable(props){
                 color: '#FFF'
             },
             exportButton: true
+            }}
+            editable={{
+              onBulkUpdate: changes =>
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    resolve();
+                  }, 1000);
+                }),     
+              onRowDelete: oldData =>
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    resolve();
+                  }, 1000);
+                }),     
             }}
         />
     )

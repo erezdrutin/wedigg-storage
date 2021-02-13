@@ -32,6 +32,7 @@ export default function Sidebar(props) {
     if (routeName === "/admin/management"){
       return window.location.href.indexOf("/admin/supplier") > -1 || window.location.href.indexOf("/admin/site") > -1
     } else {
+      //setManagementToggle(false);
       return window.location.href.indexOf(routeName) > -1 ? true : false;
     }
   }
@@ -39,6 +40,7 @@ export default function Sidebar(props) {
   var links = (
     <List className={classes.list}>
       {routes.map((prop, key) => {
+        console.log("PROP | KEYYY ====> ", prop, " | ", key)
         var activePro = " ";
         var listItemClasses;
         listItemClasses = classNames({
@@ -79,7 +81,6 @@ export default function Sidebar(props) {
                     to={"/admin/site"}
                     className={activePro + classes.item}
                     activeClassName="active"
-                    key="admin_site"
                   >
                     <ListItem button className={classes.itemLink + listItemClasses}>
                       <Icon className={classNames(classes.itemIcon, whiteFontClasses, {[classes.itemIconRTL]: props.rtlActive })}>{"place"}</Icon>
@@ -95,7 +96,6 @@ export default function Sidebar(props) {
                     to={"/admin/supplier"}
                     className={activePro + classes.item}
                     activeClassName="active"
-                    key="admin_supplier"
                   >
                     <ListItem button className={classes.itemLink + listItemClasses}>
                       <Icon className={classNames(classes.itemIcon, whiteFontClasses, {[classes.itemIconRTL]: props.rtlActive })}>{"local_shipping"}</Icon>
