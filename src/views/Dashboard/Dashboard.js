@@ -139,7 +139,46 @@ export default function Dashboard(props) {
   return (
     <Card>
       <CardHeader className={classes.headerColor}>
-        <h4 className={classes.cardTitleWhite}>Your Dashboard</h4>
+        <h4 className={classes.cardTitleWhite}>Filter Options</h4>
+        <Grid style={{display: 'flex', marginTop: '0.5rem', marginBottom: '3.5rem'}}>
+          <div style={{width: '80%'}}>
+            <Grid container xs={12}>
+                <Grid item xs={2}>
+                  <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Owner" isDisabled={false} />
+                </Grid>
+                <Grid item xs={2} style={{width: '75%'}}>
+                  <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Site" isDisabled={false} />
+                </Grid>
+                <Grid item xs={2} style={{width: '75%'}}>
+                  <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Storage" isDisabled={false} />
+                </Grid>
+                <Grid item xs={2}>
+                  <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Category" isDisabled={false} />
+                </Grid>
+                <Grid item xs={2}>
+                  <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Supplier" isDisabled={false} />
+                </Grid>
+                <Grid item xs={2}>
+                  <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Warranty" isDisabled={false} />
+                </Grid>
+            </Grid>
+          </div>
+          <div style={{width: '20%', marginLeft: '0.5rem'}}>
+            <Grid container xs={12}>
+              <Grid item xs={6}>
+                <Button
+                variant="contained"
+                color="warning"
+                endIcon={<Icon>search</Icon>}
+                onClick={() => {cardsArr.length < 4 ? setOpenNewCard(true) : handleOpenAlert("error", "The maximum amount of custom cards allowed is 4!")}}
+                style={colorButtonStyle}
+                >
+                Filter
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+        </Grid>
         <p className={classes.cardCategoryWhite}>
           All your devices and actions in one space.
         </p>
@@ -157,70 +196,29 @@ export default function Dashboard(props) {
       </CardHeader>
       <CardBody>
         {/* The following part is in charge of the cards on top of the page: */}
-          <Grid style={{display: 'flex', marginTop: '0.5rem', marginBottom: '3.5rem'}}>
-            <div style={{width: '80%'}}>
-              <Grid container xs={12}>
-                  <Grid item xs={2}>
-                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Owner" isDisabled={false} />
-                  </Grid>
-                  <Grid item xs={2} style={{width: '75%'}}>
-                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Site" isDisabled={false} />
-                  </Grid>
-                  <Grid item xs={2} style={{width: '75%'}}>
-                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Storage" isDisabled={false} />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Category" isDisabled={false} />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Supplier" isDisabled={false} />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <GenerateAutoComplete acID="checkboxes-owners" valuesArr={[]} isMultiple={true} handleSetNewVal={() => console.log("erez")} tfLabel="Warranty" isDisabled={false} />
-                  </Grid>
-              </Grid>
-            </div>
-            <div style={{width: '20%', marginLeft: '0.5rem'}}>
-              <Grid container xs={12}>
-                <Grid item xs={6}>
-                  <Button
-                  variant="contained"
-                  color="warning"
-                  endIcon={<Icon>search</Icon>}
-                  onClick={() => {cardsArr.length < 4 ? setOpenNewCard(true) : handleOpenAlert("error", "The maximum amount of custom cards allowed is 4!")}}
-                  style={colorButtonStyle}
-                  >
-                  Filter
-                  </Button>
-                </Grid>
-              </Grid>
-            </div>
-          </Grid>
+          
           {/* <Grid item xs={12}> */}
               {/* Generating The 4 Default Cards (which are global) */}
               {/* {GenerateDefaultCards()} */}
               {/* Generating The Custom Cards (which are specific to the current user) */}
               {/* {cardsArr.length > 0 && <GenerateCustomCards db={db} cardsArr={cardsArr} setCardsArr={setCardsArr} handleOpenAlert={handleOpenAlert}></GenerateCustomCards>} */}
           {/* </Grid> */}
-          <Grid container xs={12} spacing={8}>
-            <Grid item xs={6}>
-              <DashboardTable title="Managed Devices" headerBackground="#363636" data={devicesArr} />
+          <Grid container xs={12} spacing={8} style={{marginLeft: '0rem'}}>
+            <Grid item xs={3}>
+              <DashboardCard countTitle={4} category="Sites" color="warning" icon="location_on" description="Total Managed Sites" isDefaultCard={true}/>
             </Grid>
-            <Grid container xs={6} spacing={2}>
-              <Grid item xs={6}>
-                <DashboardCard countTitle={4} category="Sites" color="warning" icon="location_on" description="Total Managed Sites" isDefaultCard={true}/>
-              </Grid>
-              <Grid item xs={6}>
-                <DashboardCard countTitle={9} category="Storages" color="primary" icon="storage" description="Total Managed Storages" isDefaultCard={true}/>
-              </Grid>
-              <Grid item xs={6} style={{marginTop: '-2.5rem'}}>
-                <DashboardCard countTitle={3} category="Devices" color="info" icon="tv" description="Total Managed Devices" isDefaultCard={true}/>
-              </Grid>
-              <Grid item xs={6} style={{marginTop: '-2.5rem'}}>
-                <DashboardCard countTitle={4} category="Suppliers" color="success" icon="storefront" description="Total Managed Suppliers" isDefaultCard={true}/>
-              </Grid>
+            <Grid item xs={3}>
+              <DashboardCard countTitle={9} category="Storages" color="primary" icon="storage" description="Total Managed Storages" isDefaultCard={true}/>
+            </Grid>
+            <Grid item xs={3}>
+              <DashboardCard countTitle={3} category="Devices" color="info" icon="tv" description="Total Managed Devices" isDefaultCard={true}/>
+            </Grid>
+            <Grid item xs={3}>
+              <DashboardCard countTitle={4} category="Suppliers" color="success" icon="storefront" description="Total Managed Suppliers" isDefaultCard={true}/>
             </Grid>
           </Grid>
+          <DashboardTable title="Managed Devices" headerBackground="#363636" data={devicesArr} />
+
 
           <NewCard open={openNewCard} setOpenNewCard={setOpenNewCard} handleOpenAlert={handleOpenAlert} cardsArr={cardsArr} setCardsArr={setCardsArr}/>
 

@@ -32,7 +32,7 @@ const dashboardStyle = {
     borderRadius: "3px",
     marginTop: "-20px",
     padding: "15px",
-    height: "5.75rem"
+    height: "7.75rem"
   },
   stats: {
     color: grayColor[0],
