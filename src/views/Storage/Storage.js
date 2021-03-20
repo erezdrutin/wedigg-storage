@@ -101,11 +101,25 @@ export default function Storage() {
   const classes = useStyles();
   const [data, setData] = useState([
     {
-      siteId: "IsraelID", productId: "MH7892/A", storage: "Storage A", supplierId: "WediggitID", certificate: "SH724892",
+      siteId: "9Js9w91ZLFnbI5v8KhIm", productId: "9NASxzjq123masIFJn3m", storage: "Storage A", supplierId: "3Js8w91PLFNbI5v8KhIm", certificate: "SH724892",
       certificateImage: "https://firebasestorage.googleapis.com/v0/b/wedigg-storage.appspot.com/o/images%2FSH22049567?alt=media&token=37e6930b-1143-45db-a0eb-91353359b1c4",
-      serial: "XY7NTF4JN", warranty: new Date(), ownerId: "", active: false, notes: "None"
+      serial: "XY7NTF4JN", warranty: new Date(), ownerId: "", active: true, notes: "None"
     }
   ]);
+  const [productsDict, setProductsDict] = useState({
+    "9NASxzjq123masIFJn3m": {sku: "MH7892/A", description: "iPhone 12", price: 3800},
+    "9SUAD194msaq1293FJ2m": {sku: "MH8531/A", description: "iPhone 12 Pro Max", price: 5000}
+  });
+  const [sitesDict, setSitesDict] = useState({
+    "9Js9w91ZLFnbI5v8KhIm": {name: "Israel", location: "Tel Aviv", storages: ["Storage A", "Storage B"]},
+    "9NG6p21ZLFnbI5v8KhIm": {name: "UK", location: "London", storages: ["Storage A", "Storage B"]}
+  });
+  const [suppliersDict, setSuppliersDict] = useState({
+    "3Js8w91PLFNbI5v8KhIm": {site: "Israel", name: "Wediggit"},
+    "8KSA21n3fnYKF129d3Ym": {site: "UK", name: "Apple"}
+  });
+
+  const [usersArr, setUsersArr] = useState('');
 
   const [currentDevice, setCurrentDevice] = useState('');
 
@@ -211,6 +225,9 @@ export default function Storage() {
             setOpenAddDevice={setOpenAddDevice}
             currentDevice={currentDevice}
             setCurrentDevice={setCurrentDevice}
+            productsDict={productsDict}
+            sitesDict={sitesDict}
+            suppliersDict={suppliersDict}
           />
           </CardBody>
         </Card>

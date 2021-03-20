@@ -22,7 +22,7 @@ const colorButtonStyle = {
   };
 
 export default function StorageTable(props){
-    const { title, headerBackground, data, setOpenDeviceQr, setOpenAddDevice, currentDevice, setCurrentDevice } = props;
+    const { title, headerBackground, data, setOpenDeviceQr, setOpenAddDevice, currentDevice, setCurrentDevice, productsDict, sitesDict, suppliersDict } = props;
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
     return (
@@ -40,27 +40,24 @@ export default function StorageTable(props){
                 </Button>
             }
             columns={[
-    
-            { title: 'Actions', field: 'notes', export: false, render: rowData => (
-                <Grid>
-                    <IconButton color="inherit" aria-label="delete device" style={{maxWidth: '32px', maxHeight: '32px'}} onClick={() => console.log("delete")}>
-                        <DeleteIcon />
-                    </IconButton>
-                </Grid>
-            ) },
-            { title: 'Site ID', field: 'siteId', hidden: true},
-            { title: 'Product', field: 'productId', render: rowData => rowData.productId },
-            { title: 'SKU', field: 'productId' },
-            { title: 'Storage', field: 'storage', hidden: true },
-            { title: 'Supplier', field: 'supplierId', hidden: true },
-            { title: 'Certificate', field: 'certificate', hidden: true },
-            { title: 'certificateImage', field: 'certificate', hidden: true},
-            { title: 'Serial', field: 'serial' },
-            { title: 'Warranty', field: 'warranty', render: rowData => rowData.warranty.toLocaleDateString("en-IS") },
-            { title: 'Owner ID', field: 'ownerId', hidden: true },
-            { title: 'Active', field: 'active', hidden: true },
-            { title: 'Notes', field: 'notes', hidden: true },
-    
+                { title: 'Actions', field: 'notes', export: false, render: rowData => (
+                    <Grid>
+                        <IconButton color="inherit" aria-label="delete device" style={{maxWidth: '32px', maxHeight: '32px'}} onClick={() => console.log("delete")}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Grid>
+                ) },
+                { title: 'Site ID', field: 'siteId', hidden: true},
+                { title: 'Product', field: 'productId', render: rowData => productsDict[rowData.productId].description },
+                { title: 'SKU', field: 'productId', render: rowData => productsDict[rowData.productId].sku },
+                { title: 'Storage', field: 'storage', hidden: true },
+                { title: 'Supplier', field: 'supplierId', hidden: true },
+                { title: 'Certificate', field: 'certificate', hidden: true },
+                { title: 'certificateImage', field: 'certificate', hidden: true},
+                { title: 'Serial', field: 'serial' },
+                { title: 'Warranty', field: 'warranty', render: rowData => rowData.warranty.toLocaleDateString() },
+                { title: 'Owner ID', field: 'ownerId', hidden: true },
+                { title: 'Active', field: 'active', hidden: true },
             ]}
             data={data}
             onRowClick={(evt, selectedRow) => {
@@ -75,8 +72,15 @@ export default function StorageTable(props){
                 return (
                     <div>
                     <p style={{marginTop: '10px'}}>
-                        <strong>Product: </strong>{rowData.deviceName}<br></br>
-                        <strong>Category: </strong>{rowData.category}<br></br>
+                        <strong>Site: </strong>{sitesDict[rowData.siteId].name}<br></br>
+                        <strong>Storage: </strong>{rowData.storage}<br></br>
+                        <strong>Supplier: </strong>{suppliersDict[rowData.supplierId].name}<br></br>
+                        <strong>Product: </strong>{productsDict[rowData.productId].description}<br></br>
+                        <strong>SKU: </strong>{productsDict[rowData.productId].sku}<br></br>
+                        <strong>Serial: </strong>{rowData.serial}<br></br>
+                        <strong>Warranty: </strong>{rowData.warranty.toLocaleDateString()}<br></br>
+                        <strong>Owner: </strong>{rowData.ownerId !== '' ? rowData.ownerId : 'None'}<br></br>
+                        <strong>State: </strong>{rowData.active ? 'Active' : 'Inactive'}<br></br>
                         <strong>Certificate: </strong>{rowData.certificate}<br></br>
                     </p>
                     {console.log(rowData)}
