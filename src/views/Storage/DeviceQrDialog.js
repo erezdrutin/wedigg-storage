@@ -8,6 +8,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { exportComponentAsPNG } from 'react-component-export-image';
+import ImageIcon from '@material-ui/icons/Image';
+import PrintIcon from '@material-ui/icons/Print';
+import EditIcon from '@material-ui/icons/Edit';
+import Typography from '@material-ui/core/Typography';
 
 import QRCode from "react-qr-code";
 
@@ -62,7 +66,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function DeviceQrDialog(props){
-    const { serial, formTitle, open, setOpen} = props;
+    const { serial, formTitle, open, setOpen, handleOpenEdit} = props;
     const componentRef = useRef();
     const classes = useStyles();
 
@@ -99,17 +103,17 @@ export default function DeviceQrDialog(props){
                 <QRCode value={serial} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Button style={colorButtonStyle} onClick={() => exportComponentAsPNG(componentRef, {fileName: ("Device_" + serial)})}>
-                    EXPORT As PNG
-                </Button>
                 <Button style={colorButtonStyle} onClick={handlePrint}>
-                    Print QR Sticker
+                    <PrintIcon style={{marginRight: '0.5rem'}} />
+                    <Typography variant="button"  display="block" style={{marginRight: '1rem'}}>Print QR</Typography>
+                </Button>
+                <Button style={colorButtonStyle} onClick={handleOpenEdit}>
+                    <EditIcon style={{marginRight: '0.5rem'}} />
+                    <Typography variant="button"  display="block" style={{marginRight: '1rem'}}>Edit Device</Typography>
                 </Button>
             </div>
         </DialogContent>
     </Dialog>
     )
   }
-
-        // 
 

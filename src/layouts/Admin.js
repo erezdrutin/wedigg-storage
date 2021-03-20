@@ -83,7 +83,7 @@ export default function Admin() {
   return (
     <div className={classes.wrapper}>
       <Sidebar
-        routes={routes.filter(route => !["Settings", "Sites", "Suppliers"].includes(route.name))}
+        routes={routes.filter(route => !["Settings", "Sites", "Products", "Suppliers", "Add New Device"].includes(route.name))}
         logoText={"Wedigg Storage"}
         logo={logo}
         image={image}

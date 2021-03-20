@@ -30,7 +30,7 @@ export default function Sidebar(props) {
   // verifies if routeName is the one active (in browser input)
   function activeRoute(routeName) {
     if (routeName === "/admin/management"){
-      return window.location.href.indexOf("/admin/supplier") > -1 || window.location.href.indexOf("/admin/site") > -1
+      return window.location.href.indexOf("/admin/supplier") > -1 || window.location.href.indexOf("/admin/site") > -1 || window.location.href.indexOf("/admin/product") > -1
     } else {
       //setManagementToggle(false);
       return window.location.href.indexOf(routeName) > -1 ? true : false;
@@ -101,6 +101,21 @@ export default function Sidebar(props) {
                       <Icon className={classNames(classes.itemIcon, whiteFontClasses, {[classes.itemIconRTL]: props.rtlActive })}>{"local_shipping"}</Icon>
                       <ListItemText
                         primary={"Supplier"}
+                        className={classNames(classes.itemText, whiteFontClasses, {[classes.itemTextRTL]: props.rtlActive})}
+                        disableTypography={true}
+                      />
+                    </ListItem>
+                  </NavLink>
+
+                  <NavLink
+                    to={"/admin/product"}
+                    className={activePro + classes.item}
+                    activeClassName="active"
+                  >
+                    <ListItem button className={classes.itemLink + listItemClasses}>
+                      <Icon className={classNames(classes.itemIcon, whiteFontClasses, {[classes.itemIconRTL]: props.rtlActive })}>{"desktop_windows"}</Icon>
+                      <ListItemText
+                        primary={"Product"}
                         className={classNames(classes.itemText, whiteFontClasses, {[classes.itemTextRTL]: props.rtlActive})}
                         disableTypography={true}
                       />

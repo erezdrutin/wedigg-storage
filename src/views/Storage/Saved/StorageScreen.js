@@ -11,7 +11,7 @@ import CardBody from "components/Card/CardBody.js";
 import MaterialTable from "material-table";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
-import StorageTable from "../StorageTable";
+import StorageTable from "../Prev_Version/StorageTable";
 import fire from '../../../fire.js';
 
 // Filter Options
@@ -20,9 +20,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
-import NewDevice from '../NewDevice';
+import NewDevice from '../Prev_Version/NewDevice';
 import DeviceQrDialog from '../DeviceQrDialog';
-import EditDevice from '../EditDevice';
+import EditDevice from '../Prev_Version/EditDevice';
 
 // Alerts:
 import Snackbar from '@material-ui/core/Snackbar';
