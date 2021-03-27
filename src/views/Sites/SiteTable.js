@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import MaterialTable from "material-table";
-import fire from '../../fire.js';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -25,6 +24,15 @@ export default function SiteTable(props){
 
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
+    const extractSiteFromRow = (dataRow) => {
+        return {
+            id: dataRow.id,
+            siteName: dataRow.siteName,
+            siteLocation: dataRow.siteLocation,
+            storagesArr: dataRow.storagesArr,
+        }
+    }
+
     return (
         <MaterialTable
             isLoading={data.length === 0}
@@ -40,33 +48,25 @@ export default function SiteTable(props){
                 </Button>
             }
             columns={[
-    
-            { title: 'Actions', field: 'notes', export: false, render: rowData => (
-                <Grid>
-                    <IconButton color="inherit" aria-label="delete device" style={{maxWidth: '32px', maxHeight: '32px'}} onClick={() => console.log("delete")}>
-                        <DeleteIcon />
-                    </IconButton>
-                </Grid>
-            ) },
-            { title: 'Site', field: 'name' },
-            { title: 'Location', field: 'location' },
-            { title: 'Total Storages', field: 'storagesArr', render: rowData => rowData.storagesArr.length },
-    
+                { title: 'Site', field: 'siteName' },
+                { title: 'Location', field: 'siteLocation' },
+                { title: 'Total Storages', field: 'storagesArr', render: rowData => rowData.storagesArr ? rowData.storagesArr.length : 0 },
             ]}
             data={data}
             onRowClick={(evt, selectedRow) => {
                 setSelectedRowIndex(selectedRow.tableData.id);
                 (evt.target).ondblclick = () => {
-                    console.log("Double Click")
-                    setCurrentSite(selectedRow)
+                    console.log("Double Click");
+                    setCurrentSite(extractSiteFromRow(selectedRow));
+                    setOpenEdit(true);
                 }
             }}
             detailPanel={rowData => {
                 return (
                     <div>
                     <p style={{marginTop: '10px'}}>
-                        <strong>Site Name: </strong>{rowData.name}<br></br>
-                        <strong>Site Location: </strong>{rowData.location}<br></br>
+                        <strong>Site Name: </strong>{rowData.siteName}<br></br>
+                        <strong>Site Location: </strong>{rowData.siteLocation}<br></br>
                         <strong>Site Storages: </strong>{rowData.storagesArr.toString()}<br></br>
                     </p>
                     </div>

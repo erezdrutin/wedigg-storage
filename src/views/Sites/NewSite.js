@@ -9,6 +9,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import NewSiteTable from './NewSiteTable.js';
+import fire from '../../fire.js';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -61,17 +62,68 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function NewSite(props){
-    const {formTitle, open, setOpen} = props;
+    // Variables Definition:
+    const {formTitle, open, setOpen, data, setData, handleOpenAlert} = props;
     const classes = useStyles();
-    const [data, setData] = useState([]);
+    const [siteName, setSiteName] = useState('');
+    const [siteLocation, setSiteLocation] = useState('');
+    const [storagesArr, setStoragesArr] = useState([]);
+
 
     const handleClose = () => {
         setOpen(false);
     };
 
     const handleOk = () => {
+        console.log("NAME: ", siteName);
+        console.log("LOCATION: ", siteLocation);
+        console.log("STORAGES: ", storagesArr);
+        // Adding the site (both to the DB & to the UI table):
+        addSite();
         setOpen(false);
+        clearFields();
     };
+
+    /**
+     * A function in charge of clearing the different input fields in the component:
+     */
+    const clearFields = () => {
+        setSiteName('');
+        setSiteLocation('');
+        setStoragesArr([]);
+    }
+
+    /**
+     * A function in charge of adding a site to the system.
+     * 1. Adding the site to the db.
+     * 2. Adding the site to the UI (table).
+     * 3. Prompting the user with an alert to let them know that the operation was successful.
+     */
+    const addSite = () => {
+        const db = fire.firestore()
+        var curSite = {
+            siteName: siteName,
+            siteLocation: siteLocation,
+            storagesArr: storagesArr.map(a => a.storageName)
+        }
+        var query = db.collection("sites").add(curSite)
+        .then((docRef) => {
+            // Alerting the user to let them know that the site was successfully added to the db:
+            handleOpenAlert("success", "The site was successfully added!");
+            // Adding the site to the sitesArr:
+            curSite.id = docRef.id; // Adding the Site's id as a field to the site object.
+            var temp = data; // Initializing a copy of the original sitesArr.
+            temp.push(curSite); // Pushing the new site to the copy of the sitesArr.
+            setData(temp); // Setting the sitesArr to the new array of sites.
+            // Printing for tests:
+            console.log("Document written with ID: ", docRef.id);
+        })
+        .catch((error) => {
+            // Alerting the user to let them know that the site was unsuccessfully added to the db:
+            handleOpenAlert("success", "We failed to add the site! Please try again later.");
+            console.error("Error adding document: ", error);
+        });
+    }
 
     const colorButtonStyle = {
         background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
@@ -97,13 +149,30 @@ export default function NewSite(props){
         <DialogContent>
             <Grid container spacing={3}>
                 <Grid item xs={6}>
-                    <TextField id="outlined-basic" label="Site Name" variant="outlined" style={{width: '100%'}} />
+                    <TextField
+                    id="outlined-site"
+                    label="Site Name"
+                    variant="outlined"
+                    style={{width: '100%'}}
+                    onChange={(event) => setSiteName(event.target.value)}
+                    />
                 </Grid>
                 <Grid item xs={6}>
-                    <TextField id="outlined-basic" label="Site Location" variant="outlined" style={{width: '100%'}} />
+                    <TextField
+                    id="outlined-location"
+                    label="Site Location"
+                    variant="outlined"
+                    style={{width: '100%'}}
+                    onChange={(event) => setSiteLocation(event.target.value)}
+                    />
                 </Grid>
                 <Grid item xs={12}>
-                    <NewSiteTable title="Storages Table" headerBackground="#26C281" data={data} setData={setData}/>
+                    <NewSiteTable
+                    title="Storages Table"
+                    headerBackground="#26C281" 
+                    data={storagesArr}
+                    setData={setStoragesArr}
+                    />
                 </Grid>
             </Grid>
         </DialogContent>

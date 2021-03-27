@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
@@ -17,6 +17,8 @@ import Grid from '@material-ui/core/Grid';
 import TrackChangesTable from '../TrackChanges/TrackChangesTable.js';
 import Tooltip from '@material-ui/core/Tooltip';
 import { Person, LocationOn, Storage, ToggleOn, Today, Notes } from '@material-ui/icons'; // Icons
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import QRCode from "react-qr-code";
 
@@ -75,6 +77,8 @@ export default function EditDevice(props){
     const componentRef = useRef();
     const classes = useStyles();
 
+    const [isActive, setIsActive] = useState(false);
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -84,6 +88,13 @@ export default function EditDevice(props){
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
     });
+
+    /**
+     * A function in charge of toggling the isActive's boolean value.
+     */
+    const toggleIsActive = () => {
+        setIsActive(!isActive);
+    }
 
     /**
      * A function that formats a date object and returns a matching string.
@@ -164,16 +175,10 @@ export default function EditDevice(props){
                     />
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
-                    <ToggleOn style={{width: '15%', marginTop: '1rem'}}/>
-                    <CheckboxesTags
-                        getOptionTitle={(option) => option.deviceName}
-                        getOptionDesc={(option) => option.deviceName}
-                        data={data}
-                        tooltipTitle="Device State"
-                        fieldWidth="85%"
-                        fieldName="Active"
-                        placeholderName="site"
-                    />
+                    <Notes style={{width: '15%', marginTop: '1rem'}}/>
+                    <Tooltip title="Edit Notes" style={{width: '85%'}}>
+                        <TextField id="outlined-basic" label="Notes" variant="outlined" style={{width: '100%'}} />
+                    </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <Today style={{width: '15%', marginTop: '1rem'}}/>
@@ -181,11 +186,17 @@ export default function EditDevice(props){
                         <TextField id="outlined-basic" label="Warranty (in months)" variant="outlined" style={{width: '100%'}} />
                     </Tooltip>
                 </Grid>
-                <Grid item xs={4} style={{display: 'flex'}}>
-                    <Notes style={{width: '15%', marginTop: '1rem'}}/>
-                    <Tooltip title="Edit Notes" style={{width: '85%'}}>
-                        <TextField id="outlined-basic" label="Notes" variant="outlined" style={{width: '100%'}} />
-                    </Tooltip>
+                <Grid item xs={2} style={{display: 'flex'}}>
+                    <FormControlLabel
+                        control={<Switch 
+                            checked={isActive}
+                            onChange={toggleIsActive}
+                            name="Device State"
+                            color="primary"
+                            style={{color: 'black'}}
+                        />}
+                        label={isActive ? "Active" : "Inactive"}
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     <TrackChangesTable title="Device Changes History" headerBackground="#9d36b3" data={[]} usersData={[]} getFormattedDate={getFormattedDate}/>

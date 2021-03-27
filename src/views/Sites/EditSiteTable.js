@@ -18,7 +18,7 @@ const colorButtonStyle = {
     maxWidth: '75%',
   };
 
-export default function NewSiteTable(props){
+export default function EditSiteTable(props){
     const { title, headerBackground, data, setData } = props;
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 

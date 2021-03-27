@@ -11,10 +11,19 @@ import Grid from '@material-ui/core/Grid';
 import Icon from "@material-ui/core/Icon";
 import Button from "components/CustomButtons/Button.js";
 import TextField from '@material-ui/core/TextField';
+import fire from '../../fire.js';
 
 import SiteTable from './SiteTable.js';
 import NewSite from './NewSite.js';
 import EditSite from './EditSite.js';
+
+// Alerts:
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const styles = {
   cardCategoryWhite: {
@@ -64,14 +73,85 @@ const useStyles = makeStyles(styles);
 
 export default function Site() {
   const classes = useStyles();
-  const [data, setData] = useState([
-    {name: "Site A", location: "Israel", storagesArr: ["Stoage A", "Storage B", "Storage C"], note: "None"},
-    {name: "Site B", location: "Israel", storagesArr: ["Stoage D", "Storage E", "Storage F"], note: "None"},
-  ]);
+  const [sitesArr, setSitesArr] = useState([]);
 
   const [openAdd, setOpenNew] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [currentSite, setCurrentSite] = useState('');
+
+  // Alert Variables:
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState('success');
+  const [alertText, setAlertText] = useState('');
+
+  // ---------------------------------------------------------------------------------------------------------------------------
+  // Alert Functions:
+  /**
+   * A function in charge of opening an alert.
+   * @param {string} severity - The color of the alert.
+   * @param {string} text - The text displayed in the alert.
+   */
+   const handleOpenAlert = (severity, text) => {
+    setAlertText(text);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+  /**
+   * A function in charge of closing an alert.
+   * @param {string} reason - A string representing the reason for closing the alert.
+   */
+  const handleCloseAlert = (reason) => {
+    // Not closing the alert in case of a click on the screen:
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlertOpen(false);
+  };
+  // ---------------------------------------------------------------------------------------------------------------------------
+  
+  /**
+   * A function in charge of loading sites from the DB.
+   */
+  const loadSites = () => {
+    const db = fire.firestore();
+
+    db.collection("sites").get().then((querySnapshot) => {
+      var tempArr = [];
+      // Storing all the sites from the db in an array:
+      querySnapshot.forEach((doc) => {
+        var data = doc.data();
+        var curSite = {
+          id: doc.id,
+          siteName: data.siteName,
+          siteLocation: data.siteLocation,
+          storagesArr: data.storagesArr
+        }
+        tempArr.push(curSite);
+      })
+      // Initializing our sitesArr with the generated array's value:
+      handleSetSitesArr(tempArr);
+    });
+  }
+
+  // A function which will run as soon as the page loads:
+  useEffect(() => {
+    loadSites();
+  }, []);
+
+  /**
+   * Setting the sites array to the received array.
+   * @param [{*}] arr - An array of site objects.
+   */
+  const handleSetSitesArr = (arr) => {
+    setSitesArr([]);
+    setSitesArr(arr);
+    console.log("ARRAY OF SITES: ", arr);
+  }
+
+  const handleSetCurrentSite = (site) => {
+    setCurrentSite(site);
+    console.log("CUR SITE: ", currentSite.storagesArr);
+  }
 
   return (
     <GridContainer>
@@ -88,17 +168,26 @@ export default function Site() {
           <SiteTable 
             title="Sites Table"
             headerBackground="#26C281"
-            data={data}
-            setData={setData}
+            data={sitesArr}
+            setData={setSitesArr}
             currentSite={currentSite}
-            setCurrentSite={setCurrentSite}
+            setCurrentSite={handleSetCurrentSite}
             setOpenEdit={setOpenEdit}
             setOpenNew={setOpenNew}
           />
           </CardBody>
         </Card>
       </GridItem>
-      <NewSite formTitle="New Site" open={openAdd} setOpen={setOpenNew}/>
+      
+      <NewSite formTitle="New Site" open={openAdd} setOpen={setOpenNew} data={sitesArr} setData={handleSetSitesArr} handleOpenAlert={handleOpenAlert} />
+      <EditSite formTitle="New Site" open={openEdit} setOpen={setOpenEdit} currentSite={currentSite} data={sitesArr} setData={handleSetSitesArr} handleOpenAlert={handleOpenAlert} />
+
+      {/* Displaying alerts to the users */}
+      <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
+          <Alert onClose={handleCloseAlert} severity={alertSeverity}>
+            {alertText}
+          </Alert>
+      </Snackbar>
     </GridContainer>
   );
 }

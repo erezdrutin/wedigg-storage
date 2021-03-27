@@ -29,26 +29,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Management() {
   const classes = useStyles();
-  const [comp, setComp] = React.useState('Sites');
   return (
     <div>
-        <FormControl className={classes.formControl}>
-            <InputLabel id="select-manage">Section</InputLabel>
-            <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={comp}
-            onChange={(event) => setComp(event.target.value)}
-            >
-            <MenuItem value={"Sites"}>Sites</MenuItem>
-            <MenuItem value={"Suppliers"}>Suppliers</MenuItem>
-            </Select>
-        </FormControl>
-        {comp === "Sites" ? (
-            <Site />
-        ): (
-            <Supplier />
-        )}
+      <h1> Nothing to see here...</h1>
     </div>
   );
 }

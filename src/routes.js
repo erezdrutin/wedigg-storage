@@ -23,7 +23,6 @@ import Supplier from 'views/Suppliers/Supplier.js';
 import Site from 'views/Sites/Site.js';
 import Storage from 'views/Storage/Storage.js';
 import Product from 'views/Products/Product.js';
-import StorageAddNew from 'views/Storage/Add_Device/StorageAdd.js';
 import TrackChanges from 'views/TrackChanges/TrackChanges.js';
 import SettingsPage from 'views/SettingsPage/SettingsPage.js';
 import Management from 'views/Management/Management.js';
@@ -31,27 +30,11 @@ import TableTestsView from 'views/TableTests/TableTestsView.js';
 
 const dashboardRoutes = [
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    rtlName: "לוח בקרה",
-    icon: Dashboard,
-    component: DashboardPage,
-    layout: "/admin",
-  },
-  {
     path: "/storage",
     name: "Storage",
     rtlName: "אחסון",
     icon: "storage",
     component: Storage,
-    layout: "/admin",
-  },
-  {
-    path: "/AddDevice",
-    name: "Add New Device",
-    rtlName: "אחסון",
-    icon: "add",
-    component: StorageAddNew,
     layout: "/admin",
   },
   {
@@ -100,14 +83,6 @@ const dashboardRoutes = [
     rtlName: "הגדרות",
     icon: "settings",
     component: SettingsPage,
-    layout: "/admin",
-  },
-  {
-    path: "/table",
-    name: "Table Tests",
-    rtlName: "בדיקות טבלה",
-    icon: "table",
-    component: TableTestsView,
     layout: "/admin",
   },
 ];
