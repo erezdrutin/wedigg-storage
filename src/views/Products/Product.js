@@ -13,6 +13,7 @@ import Button from "components/CustomButtons/Button.js";
 import TextField from '@material-ui/core/TextField';
 
 import ProductTable from './ProductTable.js';
+import EditProduct from './EditProduct.js';
 
 const colorButtonStyle = {
     background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
@@ -89,37 +90,83 @@ const useStyles = makeStyles(styles);
 
 export default function Product() {
   const classes = useStyles();
-  const [data, setData] = useState([
-    {
-      deviceName: "iPhone 12 Pro Max", category: "iPhone 12", site: "Israel", storage: "Main Storage", supplier: "Wediggit", certificate: "SH724892",
-      serial: "XY7NTF4JN", sku: "MH7892/A", price: 5300, warrantyStart: Date(), warrantyPeriod: "24", owner: "none", active: true, note: "none"
-    }
-  ]);
 
+  // Component Variables:
+  const [productsArr, setProductsArr] = useState([]);
+  const [currentProduct, setCurrentProduct] = useState('');
 
-  const [openDeviceQr, setOpenDeviceQr] = useState(false);
-  const [currentDevice, setCurrentDevice] = useState('');
+  // Open Pop-ups variables:
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [openVerifyOperation, setOpenVerifyOperation] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
-  const [site, setSite] = useState('');
-  const [storage, setStorage] = useState('');
-  const [supplier, setSupplier] = useState('');
-  const [category, setCategory] = useState('');
-  const [certificate, setCertificate] = useState('');
-  const [certificateImage, setCertificateImage] = useState('');
-
-  // useEffect(() => {
-  //   console.log("CERTIFICATE UPDATED: ", certificate)
-  // }, [certificate])
+  // Verify Operation Variables:
+  const [verifyOperationBool, setVerifyOperationBool] = useState(false);
+  const [verifyOperationTitle, setVerifyOperationTitle] = useState('Default Title');
+  const [verifyOperationText, setVerifyOperationText] = useState('Default Text');
+  const [verifyOperationFunction, setVerifyOperationFunction] = useState('Default Function');
+  
+  // Alert Variables:
+  const [alertSeverity, setAlertSeverity] = useState('success');
+  const [alertText, setAlertText] = useState('');
 
   /**
-   * A function in charge of determining whether the user's input in the General Information panel is valid or not.
-   * Verifying the following things:
-   * 1. The site, storage, supplier & category exists.
-   * 2. The certificate's length is valid.
-   * 3. The certificateImage's size is valid (less than 0.05 MB).
+   * A function in charge opening the verify operation dialog.
+   * @param {string} title - The title of the dialog.
+   * @param {string} text - The text of the dialog.
+  */
+  const handleOpenVerifyOperation = (title, text) => {
+    setOpenVerifyOperation(true);
+    setVerifyOperationTitle(title);
+    setVerifyOperationText(text);
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------------
+  // Alert Functions:
+  /**
+   * A function in charge of opening an alert.
+   * @param {string} severity - The color of the alert.
+   * @param {string} text - The text displayed in the alert.
    */
-  const verifyGeneralInfo = () => {
-    
+  const handleOpenAlert = (severity, text) => {
+    setAlertText(text);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+  /**
+   * A function in charge of closing an alert.
+   * @param {string} reason - A string representing the reason for closing the alert.
+   */
+  const handleCloseAlert = (reason) => {
+    // Not closing the alert in case of a click on the screen:
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlertOpen(false);
+  };
+  // ---------------------------------------------------------------------------------------------------------------------------
+
+
+  /**
+   * A function in charge of initializing the productsArr with the received vlaues.
+   * @param {[*]} arr - An array of products objects.
+   */
+   const handleSetProductsArr = (arr) => {
+    setProductsArr([]);
+    setProductsArr(arr);
+  }
+
+  
+  /**
+   * A function in charge of updating a product record in our products table.
+   * @param {*} productRec - A record representing a product which we would like to add.
+  */
+  const handleUpdateProduct = (productRec) => {
+    var tempArr = productsArr.filter(p => p.productId !== productRec.productId);
+    tempArr.push(productRec);
+    setCurrentProduct(productRec);
+    console.log(productRec)
+    handleSetProductsArr(tempArr);
   }
 
   return (
@@ -129,7 +176,7 @@ export default function Product() {
           <CardHeader className={classes.headerColor}>
             <h4 className={classes.cardTitleWhite}>Your Products</h4>
             <p className={classes.cardCategoryWhite}>
-            All your managed products in once space.
+            All your managed products in one space.
             </p>
           </CardHeader>
           <CardBody>
@@ -137,15 +184,17 @@ export default function Product() {
           <ProductTable 
             title="Products Table"
             headerBackground="#2E3D53"
-            data={data}
-            setData={setData}
-            setOpenDeviceQr={setOpenDeviceQr}
-            currentDevice={currentDevice}
-            setCurrentDevice={setCurrentDevice}
+            data={productsArr}
+            setData={setProductsArr}
+            currentProduct={currentProduct}
+            setCurrentProduct={setCurrentProduct}
+            setOpenEdit={setOpenEdit}
           />
           </CardBody>
         </Card>
       </GridItem>
+
+      <EditProduct formTitle="Edit Product" open={openEdit} setOpen={setOpenEdit} productsArr={productsArr} handleOpenAlert={handleOpenAlert} currentProduct={currentProduct} handleUpdateProduct={handleUpdateProduct}/>
     </GridContainer>
   );
 }

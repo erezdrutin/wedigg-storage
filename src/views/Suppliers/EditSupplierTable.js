@@ -18,7 +18,7 @@ const colorButtonStyle = {
     maxWidth: '75%',
   };
 
-export default function NewSupplierTable(props){
+export default function EditSupplierTable(props){
     const { title, headerBackground, data, setData } = props;
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 

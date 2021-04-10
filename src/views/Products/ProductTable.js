@@ -27,7 +27,7 @@ const colorButtonStyle = {
   };
 
 export default function ProductTable(props){
-    const { title, headerBackground, data, setData, setOpenDeviceQr, setOpenAddDevice, currentDevice, setCurrentDevice } = props;
+    const { title, headerBackground, data, setData, setCurrentProduct, setOpenEdit } = props;
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
 
@@ -50,7 +50,7 @@ export default function ProductTable(props){
                 resolve();
             }, 1000)
     });
-
+    
     const onRowDelete = (oldData) =>
         new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -86,9 +86,8 @@ export default function ProductTable(props){
             onRowClick={(evt, selectedRow) => {
                 setSelectedRowIndex(selectedRow.tableData.id);
                 (evt.target).ondblclick = () => {
-                    console.log("Double Click")
-                    setCurrentDevice(selectedRow)
-                    setOpenDeviceQr(true);
+                    setCurrentProduct(selectedRow);
+                    setOpenEdit(true);
                 }
             }}
             detailPanel={rowData => {
@@ -109,7 +108,7 @@ export default function ProductTable(props){
             options={{
                 rowStyle: rowData => ({
                     backgroundColor: (selectedRowIndex === rowData.tableData.id) ? '#EEE' : '#FFF',
-                    style: {maxWidth: '30303030px'}
+                    style: {maxWidth: '100%'}
                 }),
                 headerStyle: {
                     backgroundColor: headerBackground,
@@ -135,6 +134,7 @@ export default function ProductTable(props){
                 {
                     icon: props => <p>Spacer</p>,
                     tooltip: "Spacer",
+                    onClick: () => {}
                 },
             ]}
             
@@ -144,23 +144,23 @@ export default function ProductTable(props){
                 {
                     if(props.action.tooltip === "Add"){
                         return(
-                        <IconButton aria-label="add" onClick={() => {console.log(props); props.action.onClick();}} style={{maxWidth: '48px'}}>
-                            <AddIcon />
-                        </IconButton>
+                            <IconButton aria-label="add" onClick={() => {console.log(props); props.action.onClick();}} style={{maxWidth: '48px'}}>
+                                <AddIcon />
+                            </IconButton>
                         )
                     }
                     else if(props.action.tooltip === "Cancel"){
                         return(
-                        <IconButton aria-label="delete" onClick={() => {console.log(props); props.action.onClick();}} style={{maxWidth: '48px'}}>
-                            <ClearIcon />
-                        </IconButton>
+                            <IconButton aria-label="delete" onClick={() => {console.log(props); props.action.onClick();}} style={{maxWidth: '48px'}}>
+                                <ClearIcon />
+                            </IconButton>
                         )
                     }
                     else if(props.action.tooltip === "Save"){
                         return(
-                        <IconButton aria-label="save" onClick={() => {console.log(props); props.action.onClick();}} style={{maxWidth: '48px'}}>
-                            <DoneAllIcon />
-                        </IconButton>
+                            <IconButton aria-label="save" onClick={() => {console.log(props); props.action.onClick();}} style={{maxWidth: '48px'}}>
+                                <DoneAllIcon />
+                            </IconButton>
                         )
                     }
                     else{
@@ -170,7 +170,7 @@ export default function ProductTable(props){
                             </IconButton>
                         )
                     }
-                }
+                },
             }}
         />
     )

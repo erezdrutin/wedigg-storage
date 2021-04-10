@@ -50,7 +50,7 @@ export default function SiteTable(props){
             columns={[
                 { title: 'Site', field: 'siteName' },
                 { title: 'Location', field: 'siteLocation' },
-                { title: 'Total Storages', field: 'storagesArr', render: rowData => rowData.storagesArr ? rowData.storagesArr.length : 0 },
+                { title: 'Total Storages', field: 'storagesArr', render: rowData => rowData.storagesArr ? rowData.storagesArr.length.toString() : '0' },
             ]}
             data={data}
             onRowClick={(evt, selectedRow) => {
@@ -86,7 +86,8 @@ export default function SiteTable(props){
                     alignItems: 'center',
                     textAlign: 'center'
                   },
-                exportButton: true
+                exportButton: true,
+                exportFileName: "Wedigg Storage Sites"
             }}
         />
     )

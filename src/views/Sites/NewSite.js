@@ -120,7 +120,7 @@ export default function NewSite(props){
         })
         .catch((error) => {
             // Alerting the user to let them know that the site was unsuccessfully added to the db:
-            handleOpenAlert("success", "We failed to add the site! Please try again later.");
+            handleOpenAlert("error", "We failed to add the site! Please try again later.");
             console.error("Error adding document: ", error);
         });
     }

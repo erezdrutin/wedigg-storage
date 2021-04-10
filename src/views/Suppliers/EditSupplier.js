@@ -64,8 +64,8 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-export default function NewSupplier(props){
-    const {formTitle, open, setOpen, sitesArr, handleOpenAlert, handleAddSupplierTable} = props;
+export default function EditSupplier(props){
+    const {formTitle, open, setOpen, sitesArr, handleOpenAlert, currentSupplier, handleUpdateSupplier} = props;
     const classes = useStyles();
 
     // Form Variables Definition:
@@ -77,23 +77,47 @@ export default function NewSupplier(props){
     const [supplierServiceType, setSupplierServiceType] = useState('');
     const [supplierContacts, setSupplierContacts] = useState([]);
 
+    // A function which will run as soon as the page loads:
+    useEffect(() => {
+        setSupplierName(currentSupplier.supplierName);
+        setSupplierAddress(currentSupplier.supplierAddress);
+        setSupplierSla(currentSupplier.supplierSla);
+        setSupplierTin(currentSupplier.supplierTin);
+        setSupplierSite(sitesArr.filter(s => s.siteId === currentSupplier.supplierSite)[0]);
+        setSupplierServiceType(currentSupplier.supplierServiceType);
+        var contactsConverted = currentSupplier.supplierContacts ? currentSupplier.supplierContacts.map(x => {return {'name': x.name, 'phone': x.phone, 'email': x.email}}) : [];
+        setSupplierContacts(contactsConverted)
+    }, [currentSupplier]);
+
+    /**
+     * A function in charge of clearing the different fields as soon as we're done with the pop up.
+     */
+    useEffect(() => {
+        return clearFields();
+    }, [])
+
     const handleClose = () => {
         setOpen(false);
     };
 
+    /**
+     * A function in charge of confirming the edit of the supplier.
+     */
     const handleOk = () => {
-        console.log("NAME: ", supplierName)
-        console.log("ADDRESS: ", supplierAddress)
-        console.log("SLA: ", supplierSla)
-        console.log("TIN: ", supplierTin)
-        console.log("SITE: ", supplierSite)
-        console.log("SERVICE TYPE: ", supplierServiceType)
-        console.log("CONTACTS: ", supplierContacts)
-        clearFields();
-        handleAddSupplier();
+        // console.log("NAME: ", supplierName)
+        // console.log("ADDRESS: ", supplierAddress)
+        // console.log("SLA: ", supplierSla)
+        // console.log("TIN: ", supplierTin)
+        // console.log("SITE: ", supplierSite)
+        // console.log("SERVICE TYPE: ", supplierServiceType)
+        // console.log("CONTACTS: ", supplierContacts)
+        handleEditSupplier();
         setOpen(false);
     };
 
+    /**
+     * A function in charge of clearing the different fields of the pop up.
+     */
     const clearFields = () => {
         setSupplierName('');
         setSupplierAddress('');
@@ -104,31 +128,51 @@ export default function NewSupplier(props){
         setSupplierContacts([]);
     }
 
-    const handleAddSupplier = () => {
+    /**
+     * A function in charge of handling the Edit Supplier operation.
+     * 1. Editing the supplier record in the DB.
+     * 2. Removing the existing record from our table and replacing it with the "new" (edited) one.
+     * 3. Alerting the user with a success / failure bar.
+     */
+    const handleEditSupplier = () => {
         const db = fire.firestore();
+        var docRef = db.collection('suppliers').doc(currentSupplier.supplierId);
+        
+        var supContactsArr = supplierContacts.map(cont => {
+            return {name: cont.name, phone: cont.phone, email: cont.email};
+        });
+
         var supplierRec = {
+            ...(supplierAddress !== currentSupplier.supplierAddress && {supplierAddress: supplierAddress}),
+            ...(supplierSla !== currentSupplier.supplierSla && {supplierSla: supplierSla}),
+            ...(supplierSite.siteId !== currentSupplier.supplierSite && {supplierSite: supplierSite.siteId}),
+            ...(supplierServiceType !== currentSupplier.supplierServiceType && {supplierServiceType: supplierServiceType}),
+            supplierContacts: supContactsArr
+        }
+
+        console.log("TEST EDIT SUP: ", supplierRec);
+
+        var addSupplierRec = {
+            supplierId: currentSupplier.supplierId,
             supplierName: supplierName,
             supplierAddress: supplierAddress,
             supplierSla: supplierSla,
             supplierTin: supplierTin,
             supplierSite: supplierSite.siteId,
             supplierServiceType: supplierServiceType,
-            supplierContacts: supplierContacts.map(cont => {
-                return {name: cont.name, phone: cont.phone, email: cont.email};
-            }),
+            supplierContacts: supContactsArr,
         };
-        db.collection('suppliers')
-        .add(supplierRec)
-        .then((docRef) => {
-            supplierRec.supplierId = docRef.id;
-            // Adding the supplier to the suppliers table:
-            handleAddSupplierTable(supplierRec);
+
+        docRef.update(supplierRec)
+        .then(() => {
+            // Updating the supplier record in the suppliers table:
+            handleUpdateSupplier(addSupplierRec);
             // Letting the user know that the operation was successful:
-            handleOpenAlert("success", "Successfully created the supplier!");
+            handleOpenAlert("success", "Successfully edited the supplier!");
         })
         .catch((error) => {
             // Letting the user know that the operation wasn't successful:
-            handleOpenAlert("error", "Failed to create the supplier!");
+            handleOpenAlert("error", "Failed to edit the supplier!");
         });
     }
 
@@ -146,7 +190,7 @@ export default function NewSupplier(props){
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <TextFields style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Supplier Name" style={{width: '85%'}}>
-                        <TextField id="outlined-supplierName" label="Name" variant="outlined" style={{width: '100%'}} value={supplierName} onChange={(event) => setSupplierName(event.target.value)} />
+                        <TextField disabled id="outlined-supplierName" label="Name" variant="outlined" style={{width: '100%'}} value={supplierName} onChange={(event) => setSupplierName(event.target.value)} />
                     </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
@@ -164,7 +208,7 @@ export default function NewSupplier(props){
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <EmojiSymbols style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Taxpayer Identification Numbers"  style={{width: '85%'}}>
-                        <TextField id="outlined-supplierTin" label="TIN" variant="outlined" style={{width: '100%'}} value={supplierTin} onChange={(event) => setSupplierTin(event.target.value)} />
+                        <TextField disabled id="outlined-supplierTin" label="TIN" variant="outlined" style={{width: '100%'}} value={supplierTin} onChange={(event) => setSupplierTin(event.target.value)} />
                     </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
@@ -173,6 +217,7 @@ export default function NewSupplier(props){
                         <Autocomplete
                             id="site-autocomplete"
                             options={sitesArr}
+                            value={supplierSite}
                             freeSolo
                             getOptionLabel={(option) => option.siteName}
                             style={{ width: '100%' }}
@@ -187,6 +232,7 @@ export default function NewSupplier(props){
                         <Autocomplete
                             id="service-type-autocomplete"
                             options={['Technician', 'Consultant', 'Delivery', 'Repair Lab']}
+                            value={supplierServiceType}
                             freeSolo
                             style={{ width: '100%' }}
                             renderInput={(params) => <TextField {...params} label="Service Type" variant="outlined" />}
