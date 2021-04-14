@@ -268,10 +268,10 @@ export default function Supplier() {
         </Card>
       </GridItem>
 
-      {/* Displaying an addition form to a supplier */}
+      {/* Displaying a popup to add a supplier */}
       <NewSupplier formTitle="New Supplier" open={openAdd} setOpen={setOpenNew} sitesArr={sitesArr} handleOpenAlert={handleOpenAlert} handleAddSupplierTable={handleAddSupplier}/>
       
-      {/* Displaying an edit form to a supplier */}
+      {/* Displaying a popup to edit a supplier */}
       <EditSupplier formTitle="Edit Supplier" open={openEdit} setOpen={setOpenEdit} sitesArr={sitesArr} handleOpenAlert={handleOpenAlert} currentSupplier={currentSupplier} handleUpdateSupplier={handleUpdateSupplier}/>
 
       {/* Prompting the user to confirm an operation */}

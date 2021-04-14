@@ -145,12 +145,10 @@ export default function Site() {
   const handleSetSitesArr = (arr) => {
     setSitesArr([]);
     setSitesArr(arr);
-    console.log("ARRAY OF SITES: ", arr);
   }
 
   const handleSetCurrentSite = (site) => {
     setCurrentSite(site);
-    console.log("CUR SITE: ", currentSite.storagesArr);
   }
 
   return (

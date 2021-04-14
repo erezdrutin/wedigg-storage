@@ -27,9 +27,83 @@ const colorButtonStyle = {
   };
 
 export default function ProductTable(props){
-    const { title, headerBackground, data, setData, setCurrentProduct, setOpenEdit } = props;
+    const { title, headerBackground, data, setData, setCurrentProduct, currentProduct, setOpenEdit, verifyOperationBool, setVerifyOperationBool,
+            handleOpenVerifyOperation, handleOpenAlert } = props;
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
 
+    // ------------------------------------------------------- Adding a supplier ---------------------------------------------------------
+    const handleAddProduct = (prod) => {
+        const db = fire.firestore();
+        var productRec = {
+            productSku: prod.productSku,
+            productDescription: prod.productDescription,
+            productPrice: prod.productPrice,
+        }
+
+        db.collection('products')
+        .add(productRec)
+        .then((docRef) => {
+            productRec.productId = docRef.id;
+            // Adding the supplier to the suppliers table:
+            var tempArr = data.filter(p => p.productSku !== currentProduct.productSku);
+            tempArr.push(productRec);
+            setData(tempArr);
+            // Letting the user know that the operation was successful:
+            handleOpenAlert("success", "Successfully created the supplier!");
+        })
+        .catch((error) => {
+            // Letting the user know that the operation wasn't successful:
+            handleOpenAlert("error", "Failed to create the supplier!");
+        });
+    }
+    // ------------------------------------------------------- END OF Adding a supplier --------------------------------------------------
+    // ------------------------------------------------------- Deleting a supplier -------------------------------------------------------
+    /**
+     * Attaching a listener to verifyOperationBool which will help us determine when the verifyOperation bool state changes.
+     * The main purpose of this function is to determine when the user verifies his selection to delete a certain supplier,
+     * and once we verify it then we should delete the selected supplier.
+     */
+     useEffect(() => {
+        let isSubscribed = true;
+        if (verifyOperationBool && isSubscribed){
+            // Deleting the product from the db:
+            deleteProduct();
+            // Changing the verifyOperation bool's value (in case the user would like to delete other products):
+            setVerifyOperationBool(false);
+            // Activating the deletion function to delete the object from the table:
+            onRowDelete(currentProduct);
+        }
+        return () => (isSubscribed = false);
+    }, [verifyOperationBool]);
+
+    /**
+     * A function in charge of prompting the user to choose whether he wants to delete the chosen product or not.
+     * @param {Object} product - An object containing some details regarding the product retrieved from the chosen row from the table.
+     */
+    const promptToDeleteProduct = (product) => {
+        setCurrentProduct(product);
+        handleOpenVerifyOperation('Do you really want to delete the product ' + product.productSku
+        + '?', 'Once performed, this action can not be undone!');
+    }
+
+    const deleteProduct = () => {
+        // Removing a supplier from the db:
+        // 1. Removing it from the DB.
+        // 2. Removing the supplier from the table.
+        // 3. "Alerting" the user to let him know that we removed the supplier from the db.
+        const db = fire.firestore();
+        var docRef = db.collection("products").doc(currentProduct.productId);
+
+        docRef.delete().then(() => {
+            // Alerting the user to let them know that we deleted the supplier(s):
+            handleOpenAlert("success", "Successfully deleted the supplier!");
+        })
+        .catch(function(error){
+            handleOpenAlert("error", "Failed to delete the supplier! Please try again later.");
+            console.error("Error removing document: ", error);
+        })
+    }
+    // ------------------------------------------------------- ENDING OF Deleting a supplier ---------------------------------------------
 
     const lookup = {};
     const productsArr = [{id: 1, name: 'product1'}, {id: 2, name: 'product2'}, {id: 3, name: 'product3'}];
@@ -45,12 +119,12 @@ export default function ProductTable(props){
     const onRowAdd = (newData) => 
         new Promise((resolve, reject) => {
             setTimeout(() => {
-                //newData.tableData.id = data.length-1;
+                handleAddProduct(newData);
                 setData([...data, newData]);
                 resolve();
             }, 1000)
     });
-    
+
     const onRowDelete = (oldData) =>
         new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -67,20 +141,11 @@ export default function ProductTable(props){
     return (
         <MaterialTable
             title={title}
+            isLoading={data.length === 0}
             columns={[
-    
-            // { title: 'Actions', field: 'notes', editable: false, render: rowData => (
-            //     <Grid>
-            //         <IconButton color="inherit" aria-label="delete device" style={{maxWidth: '32px', maxHeight: '32px'}} onClick={() => console.log("delete")}>
-            //             <DeleteIcon />
-            //         </IconButton>
-            //     </Grid>
-            // ) },
-            // render: rowData => rowData.deviceName.length > 25 ? rowData.deviceName.substring(0, 25) + '...' : rowData.deviceName 
-            { title: 'SKU', field: 'sku'},
-            { title: 'Device', field: 'deviceName'},
-            { title: 'Price', field: 'price'},
-    
+                { title: 'SKU', field: 'productSku'},
+                { title: 'Device', field: 'productDescription'},
+                { title: 'Price', field: 'productPrice'},
             ]}
             data={data}
             onRowClick={(evt, selectedRow) => {
@@ -92,17 +157,11 @@ export default function ProductTable(props){
             }}
             detailPanel={rowData => {
                 return (
-                    <div>
                     <p style={{marginTop: '10px'}}>
-                        <strong>Product: </strong>{rowData.deviceName}<br></br>
-                        <strong>Category: </strong>{rowData.category}<br></br>
-                        <strong>Certificate: </strong>{rowData.certificate}<br></br>
+                        <strong>Sku: </strong>{rowData.productSku}<br></br>
+                        <strong>Device: </strong>{rowData.productDescription}<br></br>
+                        <strong>Price: </strong>{rowData.productPrice}<br></br>
                     </p>
-                    {console.log(rowData)}
-                    <a href={rowData.certificateImg} target="_blank">
-                        <img src={rowData.certificateImg} alt="certificate image" style={{maxHeight: '200px'}}/>
-                    </a>
-                    </div>
                 )
             }}
             options={{
@@ -165,7 +224,7 @@ export default function ProductTable(props){
                     }
                     else{
                         return(
-                            <IconButton aria-label="delete" onClick={() => {onRowDelete(props.data)}} style={{maxWidth: '48px'}}>
+                            <IconButton aria-label="delete" onClick={() => {promptToDeleteProduct(props.data)}} style={{maxWidth: '48px'}}>
                                 <DeleteIcon />
                             </IconButton>
                         )

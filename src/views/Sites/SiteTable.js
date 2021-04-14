@@ -56,20 +56,17 @@ export default function SiteTable(props){
             onRowClick={(evt, selectedRow) => {
                 setSelectedRowIndex(selectedRow.tableData.id);
                 (evt.target).ondblclick = () => {
-                    console.log("Double Click");
                     setCurrentSite(extractSiteFromRow(selectedRow));
                     setOpenEdit(true);
                 }
             }}
             detailPanel={rowData => {
                 return (
-                    <div>
                     <p style={{marginTop: '10px'}}>
                         <strong>Site Name: </strong>{rowData.siteName}<br></br>
                         <strong>Site Location: </strong>{rowData.siteLocation}<br></br>
                         <strong>Site Storages: </strong>{rowData.storagesArr.toString()}<br></br>
                     </p>
-                    </div>
                 )
             }}
             options={{

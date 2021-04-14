@@ -7,41 +7,19 @@ import GridContainer from "components/Grid/GridContainer.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
-import Grid from '@material-ui/core/Grid';
-import Icon from "@material-ui/core/Icon";
-import Button from "components/CustomButtons/Button.js";
-import TextField from '@material-ui/core/TextField';
+import fire from '../../fire.js';
 
 import ProductTable from './ProductTable.js';
 import EditProduct from './EditProduct.js';
+import VerifyOperation from "../VerifyOperation.js";
 
-const colorButtonStyle = {
-    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-    borderRadius: 3,
-    border: 0,
-    color: 'white',
-    height: 55,
-    padding: '0 30px',
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-    maxWidth: '75%',
-    marginTop: '-1px'
-};
+// Alerts:
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
-const CssTextField = withStyles({
-  root: {
-    '& label.Mui-focused': {
-      color: 'black',
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: 'black',
-    },
-    '& .MuiOutlinedInput-root': {
-      '&.Mui-focused fieldset': {
-        borderColor: 'black',
-      },
-    },
-  },
-})(TextField);
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const styles = {
   cardCategoryWhite: {
@@ -146,12 +124,11 @@ export default function Product() {
   };
   // ---------------------------------------------------------------------------------------------------------------------------
 
-
   /**
    * A function in charge of initializing the productsArr with the received vlaues.
    * @param {[*]} arr - An array of products objects.
    */
-   const handleSetProductsArr = (arr) => {
+  const handleSetProductsArr = (arr) => {
     setProductsArr([]);
     setProductsArr(arr);
   }
@@ -167,6 +144,37 @@ export default function Product() {
     setCurrentProduct(productRec);
     console.log(productRec)
     handleSetProductsArr(tempArr);
+  }
+
+  // A function which will run as soon as the page loads:
+  useEffect(() => {
+    const db = fire.firestore()
+    loadProducts(db);
+  }, []);
+
+
+  const loadProducts = (db) => {
+    // Defining a query to the db to retrieve the products:
+    var query = db.collection('products');
+    // Retrieving the products from the db:
+    query.get().then((querySnapshot) => {
+      // Defining an empty array which will hold the retrieved products:
+      var tempArr = [];
+      // Adding each site to tempArr:
+      querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          var data = doc.data();
+          var curProduct = {
+            productId: doc.id,
+            productSku: data.productSku,
+            productDescription: data.productDescription,
+            productPrice: data.productPrice,
+          };
+          tempArr.push(curProduct);
+      });
+      // Setting the products array to the generated array:
+      handleSetProductsArr(tempArr);
+    });
   }
 
   return (
@@ -189,12 +197,29 @@ export default function Product() {
             currentProduct={currentProduct}
             setCurrentProduct={setCurrentProduct}
             setOpenEdit={setOpenEdit}
+            verifyOperationBool={verifyOperationBool}
+            setVerifyOperationBool={setVerifyOperationBool}
+            handleOpenVerifyOperation={handleOpenVerifyOperation}
+            handleOpenAlert={handleOpenAlert}
           />
           </CardBody>
         </Card>
       </GridItem>
 
+      {/* Displaying a popup to edit a product */}
       <EditProduct formTitle="Edit Product" open={openEdit} setOpen={setOpenEdit} productsArr={productsArr} handleOpenAlert={handleOpenAlert} currentProduct={currentProduct} handleUpdateProduct={handleUpdateProduct}/>
+
+      {/* Prompting the user to confirm an operation */}
+      <VerifyOperation open={openVerifyOperation} setOpen={setOpenVerifyOperation} setBoolVal={setVerifyOperationBool}
+      dialogText={verifyOperationText} dialogTitle={verifyOperationTitle} funcToPerform={verifyOperationFunction}/>
+
+      {/* Displaying alerts to the users */}
+      <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
+          <Alert onClose={handleCloseAlert} severity={alertSeverity}>
+            {alertText}
+          </Alert>
+      </Snackbar>
+
     </GridContainer>
   );
 }

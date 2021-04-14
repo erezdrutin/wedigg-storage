@@ -75,7 +75,6 @@ export default function EditSite(props){
 
     // A function which will run as soon as the page loads:
     useEffect(() => {
-        console.log("ERERELELEL: ", currentSite);
         setSiteName(currentSite.siteName);
         setSiteLocation(currentSite.siteLocation);
         // Converting the storages array to a format which will be applicable to the table:
@@ -84,9 +83,6 @@ export default function EditSite(props){
     }, [currentSite]);
 
     const handleOk = () => {
-        console.log("NAME: ", siteName);
-        console.log("LOCATION: ", siteLocation);
-        console.log("STORAGES: ", storagesArr);
         // Adding the site (both to the DB & to the UI table):
         setOpen(false);
         editSite();
@@ -116,6 +112,7 @@ export default function EditSite(props){
             // Alerting the user to let them know that the site was successfully edited to the db:
             handleOpenAlert("success", "The site was successfully edited!");
             var temp = data.filter(a => a.id !== currentSite.id); // Initializing a copy of the original sitesArr without the edited site.
+            curSite.id = currentSite.id; // Setting the matching id to the current site.
             temp.push(curSite); // Pushing the new site to the copy of the sitesArr.
             setData(temp); // Setting the sitesArr to the new array of sites.
         })

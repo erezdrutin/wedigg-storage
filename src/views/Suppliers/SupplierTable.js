@@ -117,7 +117,6 @@ export default function SiteTable(props){
             onRowClick={(evt, selectedRow) => {
                 setSelectedRowIndex(selectedRow.tableData.id);
                 (evt.target).ondblclick = () => {
-                    console.log("Double Click");
                     setCurrentSupplier(selectedRow);
                     setOpenEdit(true);
                 }
