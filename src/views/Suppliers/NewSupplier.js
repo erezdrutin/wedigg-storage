@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function NewSupplier(props){
-    const {formTitle, open, setOpen, sitesArr, handleOpenAlert, handleAddSupplierTable} = props;
+    const {formTitle, open, setOpen, suppliersArr, sitesArr, handleOpenAlert, handleAddSupplierTable} = props;
     const classes = useStyles();
 
     // Form Variables Definition:
@@ -95,6 +95,8 @@ export default function NewSupplier(props){
             } else {
                 handleOpenAlert("error", "Please make sure that you select a valid site and service type.");
             }
+        } else if (suppliersArr.find((s) => s.supplierName.toLowerCase() === supplierName.toLowerCase())) {
+            handleOpenAlert("error", "The selected supplier name is already taken. Either choose a new one or edit the existing supplier!");
         } else {
             handleAddSupplier();
             clearFields();

@@ -269,7 +269,7 @@ export default function Supplier() {
       </GridItem>
 
       {/* Displaying a popup to add a supplier */}
-      <NewSupplier formTitle="New Supplier" open={openAdd} setOpen={setOpenNew} sitesArr={sitesArr} handleOpenAlert={handleOpenAlert} handleAddSupplierTable={handleAddSupplier}/>
+      <NewSupplier formTitle="New Supplier" open={openAdd} setOpen={setOpenNew} suppliersArr={suppliersArr} sitesArr={sitesArr} handleOpenAlert={handleOpenAlert} handleAddSupplierTable={handleAddSupplier}/>
       
       {/* Displaying a popup to edit a supplier */}
       <EditSupplier formTitle="Edit Supplier" open={openEdit} setOpen={setOpenEdit} sitesArr={sitesArr} handleOpenAlert={handleOpenAlert} currentSupplier={currentSupplier} handleUpdateSupplier={handleUpdateSupplier}/>

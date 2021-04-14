@@ -83,6 +83,8 @@ export default function NewSite(props){
     const handleOk = () => {
         if (!validateSite()){
             handleOpenAlert("error", "Ooops, something went wrong. Did you remember to include at least 1 storage?")
+        } else if (data.find((s) => s.siteName.toLowerCase() === siteName.toLowerCase())) {
+            handleOpenAlert("error", "The selected site name is already taken. Either choose a new one or edit the existing site!");
         } else {
             // The site is valid:
             addSite();

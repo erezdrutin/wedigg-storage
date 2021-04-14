@@ -99,7 +99,7 @@ export default function ProductTable(props){
                 if (newData && (newData.productSku === undefined || newData.productDescription === undefined || newData.productPrice === undefined)){
                     handleOpenAlert("error", "Please fill all the fields!");
                     reject();
-                } else if (newData?.productSku?.length < 2 || data.find((p) => p.productSku === newData.productSku)){
+                } else if (newData?.productSku?.length < 2 || data.find((p) => p.productSku.toLowerCase() === newData.productSku.toLowerCase())){
                     handleOpenAlert("error", "The product's SKU is too short or it already exists!");
                     reject();
                 } else if (newData?.productDescription?.length < 2){
