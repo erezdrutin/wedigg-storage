@@ -111,9 +111,26 @@ export default function EditSupplier(props){
         // console.log("SITE: ", supplierSite)
         // console.log("SERVICE TYPE: ", supplierServiceType)
         // console.log("CONTACTS: ", supplierContacts)
-        handleEditSupplier();
-        setOpen(false);
+        if (!validateSupplier()){
+            if (supplierSite && supplierServiceType){
+                handleOpenAlert("error", "Ooops, something went wrong. Did you remember to include at least 1 contact?");
+            } else {
+                handleOpenAlert("error", "Please make sure that you select a valid site and service type.");
+            }
+        } else {
+            handleEditSupplier();
+            clearFields();
+            setOpen(false);
+        }
     };
+
+    /**
+     * A function in charge of validating the user's input before attempting to add it to our DB.
+     */
+     const validateSupplier = () => {
+        return supplierName.length >= 2 && supplierAddress.length >= 2 && supplierSla.length >= 4 && supplierTin.length >= 4
+        && supplierSite && supplierServiceType && supplierContacts.length > 0
+    }
 
     /**
      * A function in charge of clearing the different fields of the pop up.
@@ -123,8 +140,6 @@ export default function EditSupplier(props){
         setSupplierAddress('');
         setSupplierSla('');
         setSupplierTin('');
-        setSupplierSite('');
-        setSupplierServiceType('');
         setSupplierContacts([]);
     }
 
@@ -150,7 +165,7 @@ export default function EditSupplier(props){
             supplierContacts: supContactsArr
         }
 
-        console.log("TEST EDIT SUP: ", supplierRec);
+        // console.log("TEST EDIT SUP: ", supplierRec);
 
         var addSupplierRec = {
             supplierId: currentSupplier.supplierId,
@@ -196,13 +211,25 @@ export default function EditSupplier(props){
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <LocationOn style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Supplier Address" style={{width: '85%'}}>
-                        <TextField id="outlined-supplierAddress" label="Address" variant="outlined" style={{width: '100%'}} value={supplierAddress} onChange={(event) => setSupplierAddress(event.target.value)} />
+                        {
+                            supplierAddress && supplierAddress.length < 2 ? (
+                                <TextField error helperText="The supplier's address is too short" id="outlined-supplierAddress" label="Address" variant="outlined" style={{width: '100%'}} value={supplierAddress} onChange={(event) => setSupplierAddress(event.target.value)} />
+                            ) : (
+                                <TextField id="outlined-supplierAddress" label="Address" variant="outlined" style={{width: '100%'}} value={supplierAddress} onChange={(event) => setSupplierAddress(event.target.value)} />
+                            )
+                        }
                     </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <Assignment style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Service Level Agreement" style={{width: '85%'}}>
-                        <TextField id="outlined-supplierSla" label="SLA" variant="outlined" style={{width: '100%'}} value={supplierSla} onChange={(event) => setSupplierSla(event.target.value)} />
+                        {
+                            supplierSla && supplierSla.length < 4 ? (
+                                <TextField error helperText="The supplier's SLA is too short" id="outlined-supplierSla" label="SLA" variant="outlined" style={{width: '100%'}} value={supplierSla} onChange={(event) => setSupplierSla(event.target.value)} />
+                            ) : (
+                                <TextField id="outlined-supplierSla" label="SLA" variant="outlined" style={{width: '100%'}} value={supplierSla} onChange={(event) => setSupplierSla(event.target.value)} />
+                            )
+                        }
                     </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>

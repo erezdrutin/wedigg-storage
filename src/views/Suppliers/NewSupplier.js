@@ -82,17 +82,33 @@ export default function NewSupplier(props){
     };
 
     const handleOk = () => {
-        console.log("NAME: ", supplierName)
-        console.log("ADDRESS: ", supplierAddress)
-        console.log("SLA: ", supplierSla)
-        console.log("TIN: ", supplierTin)
-        console.log("SITE: ", supplierSite)
-        console.log("SERVICE TYPE: ", supplierServiceType)
-        console.log("CONTACTS: ", supplierContacts)
-        clearFields();
-        handleAddSupplier();
-        setOpen(false);
+        // console.log("NAME: ", supplierName)
+        // console.log("ADDRESS: ", supplierAddress)
+        // console.log("SLA: ", supplierSla)
+        // console.log("TIN: ", supplierTin)
+        // console.log("SITE: ", supplierSite)
+        // console.log("SERVICE TYPE: ", supplierServiceType)
+        // console.log("CONTACTS: ", supplierContacts)
+        if (!validateSupplier()){
+            if (supplierSite && supplierServiceType){
+                handleOpenAlert("error", "Ooops, something went wrong. Did you remember to include at least 1 contact?");
+            } else {
+                handleOpenAlert("error", "Please make sure that you select a valid site and service type.");
+            }
+        } else {
+            handleAddSupplier();
+            clearFields();
+            setOpen(false);
+        }
     };
+
+    /**
+     * A function in charge of validating the user's input before attempting to add it to our DB.
+     */
+    const validateSupplier = () => {
+        return supplierName.length >= 2 && supplierAddress.length >= 2 && supplierSla.length >= 4 && supplierTin.length >= 4
+        && supplierSite && supplierServiceType && supplierContacts.length > 0
+    }
 
     const clearFields = () => {
         setSupplierName('');
@@ -146,30 +162,57 @@ export default function NewSupplier(props){
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <TextFields style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Supplier Name" style={{width: '85%'}}>
-                        <TextField id="outlined-supplierName" label="Name" variant="outlined" style={{width: '100%'}} value={supplierName} onChange={(event) => setSupplierName(event.target.value)} />
+                        {
+                            supplierName && supplierName.length < 2 ? (
+                                <TextField error helperText="The supplier's name is too short" id="outlined-supplierName" label="Name" variant="outlined" style={{width: '100%'}} value={supplierName} onChange={(event) => setSupplierName(event.target.value)} />
+                            ) : (
+                                <TextField id="outlined-supplierName" label="Name" variant="outlined" style={{width: '100%'}} value={supplierName} onChange={(event) => setSupplierName(event.target.value)} />
+                            )
+                        }
                     </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <LocationOn style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Supplier Address" style={{width: '85%'}}>
-                        <TextField id="outlined-supplierAddress" label="Address" variant="outlined" style={{width: '100%'}} value={supplierAddress} onChange={(event) => setSupplierAddress(event.target.value)} />
+                        {
+                            supplierAddress && supplierAddress.length < 2 ? (
+                                <TextField error helperText="The supplier's address is too short" id="outlined-supplierAddress" label="Address" variant="outlined" style={{width: '100%'}} value={supplierAddress} onChange={(event) => setSupplierAddress(event.target.value)} />
+                            ) : (
+                                <TextField id="outlined-supplierAddress" label="Address" variant="outlined" style={{width: '100%'}} value={supplierAddress} onChange={(event) => setSupplierAddress(event.target.value)} />
+                            )
+                        }
                     </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <Assignment style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Service Level Agreement" style={{width: '85%'}}>
-                        <TextField id="outlined-supplierSla" label="SLA" variant="outlined" style={{width: '100%'}} value={supplierSla} onChange={(event) => setSupplierSla(event.target.value)} />
+                        {
+                            supplierSla && supplierSla.length < 4 ? (
+                                <TextField error helperText="The supplier's SLA is too short" id="outlined-supplierSla" label="SLA" variant="outlined" style={{width: '100%'}} value={supplierSla} onChange={(event) => setSupplierSla(event.target.value)} />
+                            ) : (
+                                <TextField id="outlined-supplierSla" label="SLA" variant="outlined" style={{width: '100%'}} value={supplierSla} onChange={(event) => setSupplierSla(event.target.value)} />
+                            )
+                        }
                     </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <EmojiSymbols style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Taxpayer Identification Numbers"  style={{width: '85%'}}>
-                        <TextField id="outlined-supplierTin" label="TIN" variant="outlined" style={{width: '100%'}} value={supplierTin} onChange={(event) => setSupplierTin(event.target.value)} />
+                        {
+                            supplierTin && supplierTin.length < 4 ? (
+                                <TextField error helperText="The supplier's TIN is too short" id="outlined-supplierTin" label="TIN" variant="outlined" style={{width: '100%'}} value={supplierTin} onChange={(event) => setSupplierTin(event.target.value)} />
+                            ) : (
+                                <TextField id="outlined-supplierTin" label="TIN" variant="outlined" style={{width: '100%'}} value={supplierTin} onChange={(event) => setSupplierTin(event.target.value)} />
+                            )
+                        }
                     </Tooltip>
                 </Grid>
                 <Grid item xs={4} style={{display: 'flex'}}>
                     <Explore style={{width: '15%', marginTop: '1rem'}}/>
                     <Tooltip title="Associated Site" style={{width: '85%'}}>
+                        {
+
+                        }
                         <Autocomplete
                             id="site-autocomplete"
                             options={sitesArr}
