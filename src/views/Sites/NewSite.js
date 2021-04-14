@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import NewSiteTable from './NewSiteTable.js';
 import fire from '../../fire.js';
+import { storage } from "firebase";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -74,15 +75,25 @@ export default function NewSite(props){
         setOpen(false);
     };
 
+    /**
+     * A function in charge of handling a click on the "ADD" button on the add site dialog.
+     * Either prompting the user with the mistake they made in case any of the inputs is invalid
+     * or adding the site to the DB & to the table presented in the UI.
+     */
     const handleOk = () => {
-        console.log("NAME: ", siteName);
-        console.log("LOCATION: ", siteLocation);
-        console.log("STORAGES: ", storagesArr);
-        // Adding the site (both to the DB & to the UI table):
-        addSite();
-        setOpen(false);
-        clearFields();
+        if (!validateSite()){
+            handleOpenAlert("error", "Ooops, something went wrong. Did you remember to include at least 1 storage?")
+        } else {
+            // The site is valid:
+            addSite();
+            setOpen(false);
+            clearFields();
+        }
     };
+
+    const validateSite = () => {
+        return siteName.length >= 2 && siteLocation.length >= 2 && storagesArr.length > 0;
+    }
 
     /**
      * A function in charge of clearing the different input fields in the component:
@@ -149,22 +160,50 @@ export default function NewSite(props){
         <DialogContent>
             <Grid container spacing={3}>
                 <Grid item xs={6}>
-                    <TextField
-                    id="outlined-site"
-                    label="Site Name"
-                    variant="outlined"
-                    style={{width: '100%'}}
-                    onChange={(event) => setSiteName(event.target.value)}
-                    />
+                    {
+                        siteName && siteName.length < 2 ? (
+                            <TextField
+                            error
+                            helperText="The site's name is too short"
+                            id="outlined-site"
+                            label="Site Name"
+                            variant="outlined"
+                            style={{width: '100%'}}
+                            onChange={(event) => setSiteName(event.target.value)}
+                            />
+                        ) : (
+                            <TextField
+                            id="outlined-site"
+                            label="Site Name"
+                            variant="outlined"
+                            style={{width: '100%'}}
+                            onChange={(event) => setSiteName(event.target.value)}
+                            />
+                        )
+                    }
                 </Grid>
                 <Grid item xs={6}>
-                    <TextField
-                    id="outlined-location"
-                    label="Site Location"
-                    variant="outlined"
-                    style={{width: '100%'}}
-                    onChange={(event) => setSiteLocation(event.target.value)}
-                    />
+                    {
+                        siteLocation && siteLocation.length < 2 ? (
+                            <TextField
+                            error
+                            helperText="The site's location is too short"
+                            id="outlined-location"
+                            label="Site Location"
+                            variant="outlined"
+                            style={{width: '100%'}}
+                            onChange={(event) => setSiteLocation(event.target.value)}
+                            />
+                        ) : (
+                            <TextField
+                            id="outlined-location"
+                            label="Site Location"
+                            variant="outlined"
+                            style={{width: '100%'}}
+                            onChange={(event) => setSiteLocation(event.target.value)}
+                            />
+                        )
+                    }
                 </Grid>
                 <Grid item xs={12}>
                     <NewSiteTable
