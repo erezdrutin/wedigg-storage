@@ -53,16 +53,34 @@ export default function EditProduct(props) {
         });
     }
 
+    /**
+     * A function in charge of closing the edit popup.
+     */
     const handleCloseCancel = () => {
         // Set open to false:
         setOpen(false);
     }
 
+    /**
+     * A function in charge of determining whether the edits performed by the user haven't affected the product's validity.
+     * @returns Bool
+     */
+    const validateProduct = () => {
+        return productSku.length >= 2 && productDescription.length >= 2 && parseInt(productPrice) >= 0;
+    }
+
+    /**
+     * A function in charge of "confirming" the edit popup.
+     */
     const handleCloseConfirm = () => {
-        // Updating the product:
-        HandleEditProduct();
-        // Set open to false:
-        setOpen(false);
+        if (validateProduct()){
+            // Updating the product:
+            HandleEditProduct();
+            // Set open to false:
+            setOpen(false);
+        } else {
+            handleOpenAlert("error", "Ooops, something went wrong. Did you fill all the data properly?")
+        }
     }
 
     return (
@@ -75,21 +93,33 @@ export default function EditProduct(props) {
             <DialogContent>
                 <Grid container spacing={3}>
                     <Grid item xs={12} style={{display: 'flex'}}>
-                        <EmojiSymbols style={{width: '15%', marginTop: '1rem'}}/>
+                        <EmojiSymbols style={{width: '15%', marginTop: '1rem', marginLeft: '-2rem'}}/>
                         <Tooltip title="Product SKU" style={{width: '85%'}}>
                             <TextField disabled id="outlined-productSku" label="Sku" variant="outlined" style={{width: '100%'}} value={productSku} onChange={(event) => setProductSku(event.target.value)} />
                         </Tooltip>
                     </Grid>
                     <Grid item xs={12} style={{display: 'flex'}}>
-                        <Subject style={{width: '15%', marginTop: '1rem'}}/>
+                        <Subject style={{width: '15%', marginTop: '1rem', marginLeft: '-2rem'}}/>
                         <Tooltip title="Product Description" style={{width: '85%'}}>
-                            <TextField id="outlined-productDescription" label="Description" variant="outlined" style={{width: '100%'}} value={productDescription} onChange={(event) => setProductDescription(event.target.value)} />
+                            {
+                                productDescription && productDescription.length < 2 ? (
+                                    <TextField error helperText="The product's description is too short!" id="outlined-productDescription" label="Description" variant="outlined" style={{width: '100%'}} value={productDescription} onChange={(event) => setProductDescription(event.target.value)} />
+                                ) : (
+                                    <TextField id="outlined-productDescription" label="Description" variant="outlined" style={{width: '100%'}} value={productDescription} onChange={(event) => setProductDescription(event.target.value)} />
+                                )
+                            }
                         </Tooltip>                     
                     </Grid>
                     <Grid item xs={12} style={{display: 'flex'}}>
-                        <AttachMoney style={{width: '15%', marginTop: '1rem'}}/>
+                        <AttachMoney style={{width: '15%', marginTop: '1rem', marginLeft: '-2rem'}}/>
                         <Tooltip title="Product Price" style={{width: '85%'}}>
-                            <TextField id="outlined-productPrice" label="Price" variant="outlined" style={{width: '100%'}} value={productPrice} onChange={(event) => setProductPrice(event.target.value)} />
+                            {
+                                productPrice && (isNaN(productPrice) || parseInt(productPrice) < 0) ? (
+                                    <TextField error helperText="The product's price must be a positive number!" id="outlined-productPrice" label="Price" variant="outlined" style={{width: '100%'}} value={productPrice} onChange={(event) => setProductPrice(event.target.value)} />
+                                ) : (
+                                    <TextField id="outlined-productPrice" label="Price" variant="outlined" style={{width: '100%'}} value={productPrice} onChange={(event) => setProductPrice(event.target.value)} />
+                                )
+                            }
                         </Tooltip>
                     </Grid>
                 </Grid>

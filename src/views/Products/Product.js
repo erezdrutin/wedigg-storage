@@ -141,8 +141,6 @@ export default function Product() {
   const handleUpdateProduct = (productRec) => {
     var tempArr = productsArr.filter(p => p.productId !== productRec.productId);
     tempArr.push(productRec);
-    setCurrentProduct(productRec);
-    console.log(productRec)
     handleSetProductsArr(tempArr);
   }
 
