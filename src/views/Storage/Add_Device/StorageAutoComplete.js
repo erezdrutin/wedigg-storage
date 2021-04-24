@@ -36,40 +36,75 @@ const CssTextField = withStyles({
 
 export default function CheckboxesTags(props) {
   const classes = useStyles();
-  const { id, getOptionTitle, getOptionDesc, data, fieldName, placeholderName, setValue, tooltipTitle, fieldWidth} = props;
+  const { id, getOptionTitle, getOptionDesc, data, fieldName, placeholderName, setValue, tooltipTitle, fieldWidth, disabled} = props;
   return (
     <Tooltip title={tooltipTitle}>
-      <Autocomplete
-        multiple
-        id={id}
-        options={data}
-        disableCloseOnSelect
-        freeSolo
-        onChange={(event, newVal) => {
-          setValue(newVal)
-        }}
-        getOptionLabel={(option) => getOptionDesc(option)}
-        renderOption={(option, { selected }) => (
-          <React.Fragment>
-            <Checkbox
-              icon={icon}
-              checkedIcon={checkedIcon}
-              style={{ marginRight: 8 }}
-              checked={selected}
+      {disabled ? (
+        <Autocomplete
+          multiple
+          id={id}
+          options={data}
+          disableCloseOnSelect
+          freeSolo
+          disabled
+          onChange={(event, newVal) => {
+            setValue(newVal)
+          }}
+          getOptionLabel={(option) => getOptionDesc(option)}
+          renderOption={(option, { selected }) => (
+            <React.Fragment>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              {getOptionTitle(option)}
+            </React.Fragment>
+          )}
+          style={{width: fieldWidth}}
+          renderInput={(params) => (
+            <CssTextField
+            {...params}
+            variant="outlined"
+            label={fieldName}
+            placeholder={placeholderName}
             />
-            {getOptionTitle(option)}
-          </React.Fragment>
-        )}
-        style={{width: fieldWidth}}
-        renderInput={(params) => (
-          <CssTextField
-          {...params}
-          variant="outlined"
-          label={fieldName}
-          placeholder={placeholderName}
-          />
-        )}
-      />
+          )}
+        />
+      ) : (
+        <Autocomplete
+          multiple
+          id={id}
+          options={data}
+          disableCloseOnSelect
+          freeSolo
+          onChange={(event, newVal) => {
+            setValue(newVal)
+          }}
+          getOptionLabel={(option) => getOptionDesc(option)}
+          renderOption={(option, { selected }) => (
+            <React.Fragment>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              {getOptionTitle(option)}
+            </React.Fragment>
+          )}
+          style={{width: fieldWidth}}
+          renderInput={(params) => (
+            <CssTextField
+            {...params}
+            variant="outlined"
+            label={fieldName}
+            placeholder={placeholderName}
+            />
+          )}
+        />
+      )}
     </Tooltip>
   );
 }

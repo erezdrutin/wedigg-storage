@@ -19,6 +19,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { LocationOn, Storage, Assignment, LocalShipping } from '@material-ui/icons'; // Icons
 import StorageAddTable from './Add_Device/StorageAddTable.js';
 import FileUploader from './Add_Device/FileUploader.js';
+import AsyncAutoComplete from "./AsyncAutoComplete.js"
 
 import DateFnsUtils from '@date-io/date-fns'; // choose your lib
 import {
@@ -93,31 +94,31 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function AddDevice(props){
-    const { formTitle, open, setOpen} = props;
+    const { formTitle, open, setOpen, loadSites, loadSuppliers, loadProducts, handleOpenAlert} = props;
     const componentRef = useRef();
     const classes = useStyles();
     const [currentDevice, setCurrentDevice] = useState('');
-    const [data, setData] = useState([
-      {
-        deviceName: "iPhone 12 Pro Max", category: "iPhone 12", site: "Israel", storage: "Main Storage", supplier: "Wediggit", certificate: "SH724892",
-        serial: "XY7NTF4JN", sku: "MH7892/A", price: 5300, warrantyStart: Date(), warrantyPeriod: "24", owner: "none", active: true, note: "none",
-        product: {label: "iPhone 12 Pro Max", id: "1"}, warranty: "24"
-      }
-    ]);
+    const [devicesArr, setDevicesArr] = useState([]);
   
     const [site, setSite] = useState('');
     const [storage, setStorage] = useState('');
     const [supplier, setSupplier] = useState('');
-    const [category, setCategory] = useState('');
     const [certificate, setCertificate] = useState('');
     const [certificateImage, setCertificateImage] = useState('');
     const [warrantyStartDate, setWarrantyStartDate] = useState(Date());
 
     const handleClose = () => {
-        setOpen(false);
+      setOpen(false);
     };
     const handleOk = () => {
-        setOpen(false);
+      console.log("SITE: ", site);
+      console.log("STORAGE: ", storage);
+      console.log("SUPPLIER: ", supplier);
+      console.log("CERTIFICATE: ", certificate);
+      console.log("CERTIFICATE IMAGE: ", certificateImage);
+      console.log("WARRANTY START DATE: ", warrantyStartDate);
+      console.log("DEVICES ARRAY: ", devicesArr);
+      setOpen(false);
     };
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -142,18 +143,6 @@ export default function AddDevice(props){
         return dt + '/' + month + '/' + year;
     }
 
-    const colorButtonStyle = {
-        background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-        borderRadius: 3,
-        border: 0,
-        color: 'white',
-        height: 48,
-        padding: '0 30px',
-        width: '100%',
-        margin: '10px',
-        boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-      };
-
     return (
         <Dialog
         open={open}
@@ -168,24 +157,16 @@ export default function AddDevice(props){
             <Grid container xs={12} item spacing={3}>
               <Grid item xs={4} style={{display: 'flex'}}>
                 <LocationOn style={{width: '15%', marginTop: '1rem'}}/>
-                <CheckboxesTags
-                  id="checkboxesTags_site"
-                  getOptionTitle={(option) => option.site}
-                  getOptionDesc={(option) => option.site}
-                  data={data}
-                  tooltipTitle="Associated Site"
-                  fieldWidth="85%"
-                  fieldName="Site"
-                  setValue={setSite}
-                />
+                <AsyncAutoComplete label="Site" tooltipTitle="Associated Site" getLabel={(option) => option.siteName} loadFunc={loadSites} setVal={setSite} fieldWidth="85%"/>
               </Grid>
               <Grid item xs={4} style={{display: 'flex'}}>
                 <Storage style={{width: '15%', marginTop: '1rem'}}/>
                 <CheckboxesTags
                   id="checkboxesTags_storage"
-                  getOptionTitle={(option) => option.storage}
-                  getOptionDesc={(option) => option.storage}
-                  data={data}
+                  getOptionTitle={(option) => option}
+                  getOptionDesc={(option) => option}
+                  data={site ? site.storagesArr : []}
+                  setValue={setStorage}
                   tooltipTitle="Associated Storage (related to chosen Site)"
                   fieldWidth="85%"
                   fieldName="Storage"
@@ -206,16 +187,7 @@ export default function AddDevice(props){
               </Grid>
               <Grid item xs={4} style={{display: 'flex'}}>
                 <LocalShipping style={{width: '15%', marginTop: '1rem'}}/>
-                <CheckboxesTags
-                  id="checkboxesTags_supplier"
-                  getOptionTitle={(option) => option.supplier}
-                  getOptionDesc={(option) => option.supplier}
-                  data={data}
-                  tooltipTitle="Associated Supplier"
-                  fieldWidth="85%"
-                  fieldName="Supplier"
-                  setValue={setSupplier}
-                />
+                <AsyncAutoComplete label="Supplier" tooltipTitle="Associated Supplier" getLabel={(option) => option.supplierName} loadFunc={loadSuppliers} setVal={setSupplier} fieldWidth="85%"/>
               </Grid>
               <Grid item xs={4} style={{display: 'flex'}}>
                 <Assignment style={{width: '15%', marginTop: '1rem'}}/>
@@ -234,12 +206,14 @@ export default function AddDevice(props){
               </Grid>
               <Grid item xs={12}>
                 <StorageAddTable 
-                    title=""
+                    title="Devices"
                     headerBackground="#363636"
-                    data={data}
-                    setData={setData}
+                    data={devicesArr}
+                    setData={setDevicesArr}
                     currentDevice={currentDevice}
                     setCurrentDevice={setCurrentDevice}
+                    loadProducts={loadProducts}
+                    handleOpenAlert={handleOpenAlert}
                 />
               </Grid>
             </Grid>

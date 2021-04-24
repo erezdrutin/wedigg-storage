@@ -33,7 +33,7 @@ export default function StorageTable(props){
                 variant="contained"
                 color="warning"
                 endIcon={<Icon>add</Icon>}
-                onClick={setOpenAddDevice}
+                onClick={() => setOpenAddDevice(true)}
                 style={colorButtonStyle}
                 >
                 Add Devices

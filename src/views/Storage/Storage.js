@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import fire from '../../fire.js';
 // @material-ui/core components
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { grey } from '@material-ui/core/colors';
@@ -28,6 +29,16 @@ import hist from '../../history.js';
 import EditDevice from "./EditDevice.js";
 import AddDevice from "./AddDevice.js";
 
+import AsyncAutoComplete from "./AsyncAutoComplete.js"
+
+// Alerts:
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 const GreenCheckbox = withStyles({
   root: {
     color: grey[400],
@@ -38,6 +49,21 @@ const GreenCheckbox = withStyles({
   checked: {},
 })((props) => <Checkbox color="default" {...props} />);
 
+const CssTextField = withStyles({
+  root: {
+    '& label.Mui-focused': {
+      color: 'black',
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: 'black',
+    },
+    '& .MuiOutlinedInput-root': {
+      '&.Mui-focused fieldset': {
+        borderColor: 'black',
+      },
+    },
+  },
+})(TextField);
 
 const colorButtonStyle = {
   background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
@@ -106,6 +132,41 @@ export default function Storage() {
       serial: "XY7NTF4JN", warranty: new Date(), ownerId: "", active: true, notes: "None"
     }
   ]);
+
+  // Open Pop-ups variables:
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [openVerifyOperation, setOpenVerifyOperation] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+
+  // Alert Variables:
+  const [alertSeverity, setAlertSeverity] = useState('success');
+  const [alertText, setAlertText] = useState('');
+  // ---------------------------------------------------------------------------------------------------------------------------
+  // Alert Functions:
+  /**
+   * A function in charge of opening an alert.
+   * @param {string} severity - The color of the alert.
+   * @param {string} text - The text displayed in the alert.
+   */
+   const handleOpenAlert = (severity, text) => {
+    setAlertText(text);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+  /**
+   * A function in charge of closing an alert.
+   * @param {string} reason - A string representing the reason for closing the alert.
+   */
+  const handleCloseAlert = (reason) => {
+    // Not closing the alert in case of a click on the screen:
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAlertOpen(false);
+  };
+  // ---------------------------------------------------------------------------------------------------------------------------
+
+
   const [productsDict, setProductsDict] = useState({
     "9NASxzjq123masIFJn3m": {sku: "MH7892/A", description: "iPhone 12", price: 3800},
     "9SUAD194msaq1293FJ2m": {sku: "MH8531/A", description: "iPhone 12 Pro Max", price: 5000}
@@ -123,6 +184,15 @@ export default function Storage() {
 
   const [currentDevice, setCurrentDevice] = useState('');
 
+  // Filter related variables definition:
+  const [siteFilter, setSiteFilter] = useState('');
+  const [storageFilter, setStorageFilter] = useState('');
+  const [supplierFilter, setSupplierFilter] = useState('');
+  const [warrantyFilter, setWarrantyFilter] = useState('');
+  const [activeFilter, setActiveFilter] = useState('');
+
+
+
   // Different "Popups" / Pages:
   const [openDeviceQr, setOpenDeviceQr] = useState(false);
   const [openAddDevice, setOpenAddDevice] = useState(false);
@@ -135,6 +205,106 @@ export default function Storage() {
     setOpenDeviceQr(false);
     setOpenEditDevice(true);
   }
+ 
+  /**
+   * A function in charge of loading sites from the DB.
+   * @returns - A promise which when resolved will hold an array of values fetched from the DB.
+   */
+   const loadSites = () => {
+    const db = fire.firestore();
+
+    return db.collection("sites").get().then((querySnapshot) => {
+      var tempArr = [];
+      // Storing all the sites from the db in an array:
+      querySnapshot.forEach((doc) => {
+        var data = doc.data();
+        var curSite = {
+          id: doc.id,
+          siteName: data.siteName,
+          siteLocation: data.siteLocation,
+          storagesArr: data.storagesArr
+        }
+        tempArr.push(curSite);
+      })
+      // Returning our sitesArr with the generated array's value:
+      return Promise.resolve(tempArr);
+    })
+    .catch((error) => {
+      return Promise.reject('Failed to fetch the collection');
+    });
+  }
+
+  /**
+   * A function in charge of loading suppliers from the DB.
+   * @returns - A promise which when resolved will hold an array of values fetched from the DB.
+   */
+  const loadSuppliers = () => {
+    // Defining a query to the db to retrieve the suppliers:
+    const db = fire.firestore();
+    var query = db.collection('suppliers');
+    // Retrieving the suppliers from the db:
+    return query.get().then((querySnapshot) => {
+      // Defining an empty array which will hold the retrieved suppliers:
+      var tempArr = [];
+      // Adding each supplier to tempArr:
+      querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          var data = doc.data();
+          var curSupplier = {
+            supplierId: doc.id,
+            supplierName: data.supplierName,
+            supplierAddress: data.supplierAddress,
+            supplierSite: data.supplierSite,
+            supplierSla: data.supplierSla,
+            supplierTin: data.supplierTin,
+            supplierServiceType: data.supplierServiceType,
+            supplierContacts: data.supplierContacts
+          };
+          tempArr.push(curSupplier);
+      });
+      // Returning our suppliersArr with the generated array's value:
+      return Promise.resolve(tempArr);
+    })
+    .catch((error) => {
+      return Promise.reject('Failed to fetch the collection');
+    });
+  }
+
+  /**
+   * A function in charge of loading products from the DB.
+   * @returns - A promise which when resolved will hold an array of values fetched from the DB.
+   */
+  const loadProducts = () => {
+    // Defining a query to the db to retrieve the products:
+    const db = fire.firestore();
+    var query = db.collection('products');
+    // Retrieving the products from the db:
+    return query.get().then((querySnapshot) => {
+      // Defining an empty array which will hold the retrieved products:
+      var tempArr = [];
+      // Adding each site to tempArr:
+      querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          var data = doc.data();
+          var curProduct = {
+            productId: doc.id,
+            productSku: data.productSku,
+            productDescription: data.productDescription,
+            productPrice: data.productPrice,
+          };
+          tempArr.push(curProduct);
+      });
+      // Returning our suppliersArr with the generated array's value:
+      return Promise.resolve(tempArr);
+    })
+    .catch((error) => {
+      return Promise.reject('Failed to fetch the collection');
+    });
+  }
+
+  useEffect(() => {
+    console.log("ATYOOOO ", siteFilter)
+  }, [siteFilter])
 
   return (
     <GridContainer>
@@ -147,38 +317,56 @@ export default function Storage() {
             </p>
             <Grid container spacing={3}>
               <Grid item xs={3}>
-                <CheckboxesTags
+                <AsyncAutoComplete label="Site" tooltipTitle="Associated Site" getLabel={(option) => option.siteName} loadFunc={loadSites} setVal={setSiteFilter}/>
+                {/* <CheckboxesTags
                   getOptionTitle={(option) => option.deviceName}
                   getOptionDesc={(option) => option.deviceName}
                   data={data}
                   fieldName="Site"
                   placeholderName="site"
                   tooltipTitle="Associated Site"
-                />
+                /> */}
               </Grid>
               <Grid item xs={3}>
-                <CheckboxesTags
-                  getOptionTitle={(option) => option.deviceName}
-                  getOptionDesc={(option) => option.deviceName}
-                  data={data}
-                  fieldName="Storage"
-                  placeholderName="storage"
-                  tooltipTitle="Associated Storage"
-                />
+                {
+                  siteFilter ? (
+                    <CheckboxesTags
+                      getOptionTitle={(option) => option}
+                      getOptionDesc={(option) => option}
+                      data={siteFilter.storagesArr}
+                      setValue={setStorageFilter}
+                      fieldName="Storage"
+                      placeholderName="Storage"
+                      tooltipTitle="Associated Storage"
+                    />
+                  ) : (
+                    <CheckboxesTags
+                      disabled={true}
+                      getOptionTitle={(option) => option}
+                      getOptionDesc={(option) => option}
+                      data={[]}
+                      setValue={setStorageFilter}
+                      fieldName="Storage"
+                      placeholderName="Storage"
+                      tooltipTitle="Associated Storage"
+                    />
+                  )
+                }
               </Grid>
               <Grid item xs={2}>
-                <CheckboxesTags
+                <AsyncAutoComplete label="Supplier" tooltipTitle="Associated Supplier" getLabel={(option) => option.supplierName} loadFunc={loadSuppliers} setVal={setSupplierFilter}/>
+                {/* <CheckboxesTags
                   getOptionTitle={(option) => option.deviceName}
                   getOptionDesc={(option) => option.deviceName}
                   data={data}
                   fieldName="Supplier"
                   placeholderName="supplier"
                   tooltipTitle="Associated Supplier"
-                />
+                /> */}
               </Grid>
               <Grid item xs={2}>
                 <Tooltip title="Months until the device's warranty ends">
-                    <TextField id="outlined-basic" label="Warranty (in months)" variant="outlined" style={{width: '100%'}} />
+                    <CssTextField id="outlined-basic" label="Warranty (in months)" variant="outlined" style={{width: '100%'}} />
                 </Tooltip>
               </Grid>
               <Grid item xs={1}>
@@ -240,9 +428,17 @@ export default function Storage() {
       }
       {
         openAddDevice ? (
-          <AddDevice formTitle={"Add Devices"} open={openAddDevice} setOpen={setOpenAddDevice}/>
+          <AddDevice formTitle={"Add Devices"} open={openAddDevice} setOpen={setOpenAddDevice}
+          loadSites={loadSites} loadProducts={loadProducts} loadSuppliers={loadSuppliers} handleOpenAlert={handleOpenAlert}/>
         ) : ('')
       }
+
+      {/* Displaying alerts to the users */}
+      <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleCloseAlert}>
+          <Alert onClose={handleCloseAlert} severity={alertSeverity}>
+            {alertText}
+          </Alert>
+      </Snackbar>
     </GridContainer>
   );
 }
